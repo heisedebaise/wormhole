@@ -17,15 +17,16 @@ import (
 )
 
 type config struct {
-	Listen string
-	Root   string
+	Listen  string
+	Root    string
+	SaveUri string
 }
 
-var cfg config = config{":8192", "image"}
+var cfg config = config{":80", "image", "/save"}
 
 func handler(writer http.ResponseWriter, request *http.Request) {
 	uri := request.RequestURI
-	if uri == "/save" {
+	if uri == cfg.SaveUri {
 		save(writer, request, uri)
 	} else {
 		read(writer, request, uri)
@@ -37,7 +38,7 @@ func save(writer http.ResponseWriter, request *http.Request, uri string) {
 	path := request.Header.Get("path")
 	file, _, err := request.FormFile("image")
 	if err != nil {
-		writer.WriteHeader(404)
+		protocol.Send404(writer)
 
 		return
 	}
@@ -47,7 +48,7 @@ func save(writer http.ResponseWriter, request *http.Request, uri string) {
 	if empty {
 		f, _, _ := request.FormFile("image")
 		if filename, err = util.Md5(f); err != nil {
-			writer.WriteHeader(404)
+			protocol.Send404(writer)
 
 			return
 		}
@@ -66,7 +67,7 @@ func save(writer http.ResponseWriter, request *http.Request, uri string) {
 
 	out, err := os.OpenFile(absolute(filename), os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
-		writer.WriteHeader(404)
+		protocol.Send404(writer)
 
 		return
 	}
@@ -107,57 +108,57 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) {
 	index := strings.LastIndex(uri, "/")
 	names := strings.Split(uri[index+1:], ".")
 	if len(names) != 4 || (names[3] != "jpg" && names[3] != "jpeg") {
-		writer.WriteHeader(404)
+		protocol.Send404(writer)
 
 		return
 	}
 
 	origin := absolute(uri[0:index+1] + names[0] + "." + names[3])
 	if !util.Exists(origin) {
-		writer.WriteHeader(404)
+		protocol.Send404(writer)
 
 		return
 	}
 
 	scale, err := strconv.Atoi(names[1])
 	if err != nil {
-		writer.WriteHeader(404)
+		protocol.Send404(writer)
 
 		return
 	}
 
 	quality, err := strconv.Atoi(names[2])
 	if err != nil {
-		writer.WriteHeader(404)
+		protocol.Send404(writer)
 
 		return
 	}
 
 	file, err := os.Open(origin)
 	if err != nil {
-		writer.WriteHeader(404)
+		protocol.Send404(writer)
 
 		return
 	}
 	defer file.Close()
 
-	img, err := jpeg.Decode(file)
+	image, err := jpeg.Decode(file)
 	if err != nil {
-		writer.WriteHeader(404)
+		protocol.Send404(writer)
 
 		return
 	}
 
-	m := resize.Resize(uint(img.Bounds().Dx()*scale/100), 0, img, resize.Lanczos3)
+	img := resize.Resize(uint(image.Bounds().Dx()*scale/100), 0, image, resize.Lanczos3)
 	out, err := os.Create(path)
 	if err != nil {
-		writer.WriteHeader(404)
+		protocol.Send404(writer)
 
 		return
 	}
 	defer out.Close()
 
-	jpeg.Encode(out, m, &jpeg.Options{Quality: quality})
+	jpeg.Encode(out, img, &jpeg.Options{Quality: quality})
 	http.ServeFile(writer, request, path)
 }
 

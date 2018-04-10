@@ -1,3 +1,1 @@
 # wormhole
-
-https://segmentfault.com/a/1190000000415336

@@ -7,7 +7,6 @@ echo "set GOPATH=$GOPATH"
 
 go get github.com/nfnt/resize
 echo "installing github.com/nfnt/resize ..."
-go install github.com/nfnt/resize
 
 if [ -n "ls src/*" ];
 then

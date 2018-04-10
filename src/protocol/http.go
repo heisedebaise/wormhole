@@ -13,3 +13,11 @@ func Http(host string, path string, handler func(writer http.ResponseWriter, req
 		fmt.Println(err)
 	}
 }
+
+func Send404(writer http.ResponseWriter) {
+	SendCode(writer, 404)
+}
+
+func SendCode(writer http.ResponseWriter, code int) {
+	writer.WriteHeader(code)
+}
