@@ -11,6 +11,7 @@ func Md5(reader io.Reader) (string, error) {
 	if _, err := io.Copy(hash, reader); err != nil {
 		return "", err
 	}
+	
 	if closer, is := reader.(io.Closer); is {
 		closer.Close()
 	}

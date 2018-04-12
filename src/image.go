@@ -22,7 +22,7 @@ type config struct {
 	SaveUri string
 }
 
-var cfg config = config{":80", "image", "/save"}
+var cfg config = config{":8192", "image", "/save"}
 
 func handler(writer http.ResponseWriter, request *http.Request) {
 	uri := request.RequestURI
@@ -34,9 +34,30 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func save(writer http.ResponseWriter, request *http.Request, uri string) {
-	filename := request.Header.Get("filename")
 	path := request.Header.Get("path")
-	file, _, err := request.FormFile("image")
+	name := request.Header.Get("name")
+	empty := name == ""
+	if empty {
+		file, _, err := request.FormFile("file")
+		if name, err = util.Md5(file); err != nil {
+			protocol.Send404(writer)
+
+			return
+		}
+		name = name + ".jpg"
+	}
+
+	if path != "" {
+		os.MkdirAll(absolute(path), os.ModePerm)
+		name = path + "/" + name
+	}
+	if empty && util.Exists(name) {
+		fmt.Fprintf(writer, "%s", name)
+
+		return
+	}
+
+	file, _, err := request.FormFile("file")
 	if err != nil {
 		protocol.Send404(writer)
 
@@ -44,28 +65,7 @@ func save(writer http.ResponseWriter, request *http.Request, uri string) {
 	}
 	defer file.Close()
 
-	empty := filename == ""
-	if empty {
-		f, _, _ := request.FormFile("image")
-		if filename, err = util.Md5(f); err != nil {
-			protocol.Send404(writer)
-
-			return
-		}
-		filename = filename + ".jpg"
-	}
-
-	if path != "" {
-		os.MkdirAll(absolute(path), os.ModePerm)
-		filename = path + "/" + filename
-	}
-	if empty && util.Exists(filename) {
-		fmt.Fprintf(writer, "%s", filename)
-
-		return
-	}
-
-	out, err := os.OpenFile(absolute(filename), os.O_WRONLY|os.O_CREATE, 0666)
+	out, err := os.OpenFile(absolute(name), os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		protocol.Send404(writer)
 
@@ -73,18 +73,18 @@ func save(writer http.ResponseWriter, request *http.Request, uri string) {
 	}
 	defer out.Close()
 	io.Copy(out, file)
-	clean(path, filename)
+	clean(path, name)
 
-	fmt.Fprintf(writer, "%s", filename)
+	fmt.Fprintf(writer, "%s", name)
 }
 
-func clean(path string, filename string) {
+func clean(path string, name string) {
 	files, err := ioutil.ReadDir(absolute(path))
 	if err != nil {
 		return
 	}
 
-	names := strings.Split(filename, ".")
+	names := strings.Split(name, ".")
 	for _, file := range files {
 		if file.IsDir() {
 			continue
