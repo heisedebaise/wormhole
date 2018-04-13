@@ -34,12 +34,18 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func save(writer http.ResponseWriter, request *http.Request, uri string) {
+	if !util.CheckSign(request.Form) {
+		protocol.Send404(writer)
+
+		return
+	}
+
 	path := request.Header.Get("path")
 	name := request.Header.Get("name")
 	empty := name == ""
 	if empty {
 		file, _, err := request.FormFile("file")
-		if name, err = util.Md5(file); err != nil {
+		if name, err = util.Md5FromReader(file); err != nil {
 			protocol.Send404(writer)
 
 			return
