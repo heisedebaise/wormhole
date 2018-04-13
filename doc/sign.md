@@ -12,6 +12,8 @@ Wormhole通过参数签名来验证权限，规则如下：
 
 如参数为：`name=wormhole`，`param=value`，当前时间戳为：`1483067727747`（精确到毫秒），密钥为：`secret key`，则消息签名值为：`MD5(name=wormhole&param=value&sign-time=1483067727747&secret key)`。
 
+> `sign-time`有效期为`10`秒钟。
+
 ## 指定密钥
 
 如果请求参数中包含`sign-name`参数，则将查找[签名配置](../conf/sign.json)中`Name`为该参数值的密钥作为签名密钥。
