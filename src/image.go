@@ -43,7 +43,10 @@ func save(writer http.ResponseWriter, request *http.Request, uri string) {
 		return
 	}
 
-	name := request.Form["name"][0]
+	name := ""
+	if _, has := request.Form["name"]; has {
+		name = request.Form["name"][0]
+	}
 	empty := name == ""
 	if empty {
 		file, _, err := request.FormFile("file")
@@ -61,7 +64,10 @@ func save(writer http.ResponseWriter, request *http.Request, uri string) {
 		name = name + ".jpg"
 	}
 
-	path := request.Form["path"][0]
+	path := ""
+	if _, has := request.Form["path"]; has {
+		path = request.Form["path"][0]
+	}
 	if path != "" {
 		os.MkdirAll(absolute(path), os.ModePerm)
 		name = path + "/" + name
