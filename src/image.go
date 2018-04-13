@@ -114,8 +114,13 @@ func clean(path string, name string) {
 
 func read(writer http.ResponseWriter, request *http.Request, uri string) {
 	path := absolute(uri)
-	if util.Exists(path) {
-		http.ServeFile(writer, request, path)
+	info, err := os.Stat(path)
+	if err == nil {
+		if info.IsDir() {
+			protocol.Send404(writer)
+		} else {
+			http.ServeFile(writer, request, path)
+		}
 
 		return
 	}
