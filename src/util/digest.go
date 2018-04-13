@@ -12,10 +12,6 @@ func Md5FromReader(reader io.Reader) (string, error) {
 		return "", err
 	}
 
-	if closer, is := reader.(io.Closer); is {
-		closer.Close()
-	}
-
 	return hex.EncodeToString(hash.Sum(nil)), nil
 }
 

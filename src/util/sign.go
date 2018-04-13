@@ -1,6 +1,7 @@
 package util
 
 import (
+	"log"
 	"math"
 	"net/url"
 	"sort"
@@ -20,15 +21,21 @@ var cfgs []config
 
 func CheckSign(form url.Values) bool {
 	if _, has := form["sign"]; !has {
+		log.Println("no sign parameter !")
+
 		return false
 	}
 
 	if _, has := form["sign-time"]; !has {
+		log.Println("no sign-time parameter !")
+
 		return false
 	}
 
 	signTime, err := strconv.Atoi(form["sign-time"][0])
 	if err != nil || math.Abs(float64(time.Now().Unix()-int64(signTime/1000))) > 10 {
+		log.Println("sign-time parameter illegal !")
+
 		return false
 	}
 
@@ -46,14 +53,20 @@ func CheckSign(form url.Values) bool {
 	for _, key := range keys {
 		str += key + "=" + strings.Join(form[key], ",") + "&"
 	}
-	str += getSecret(form["sign-name"][0])
+
+	signName := ""
+	if _, has := form["sign-name"]; has {
+		signName = form["sign-name"][0]
+		log.Printf("use sign-name=%s.\n", signName)
+	}
+	str += getSecret(signName)
 
 	return Md5FromString(str) == form["sign"][0]
 }
 
 func getSecret(name string) string {
 	once.Do(func() {
-		LoadConfig(cfgs, "sign")
+		LoadConfig(&cfgs, "sign")
 	})
 
 	for _, cfg := range cfgs {
@@ -61,6 +74,8 @@ func getSecret(name string) string {
 			return cfg.Secret
 		}
 	}
+	
+	log.Println("use default sign-name.")
 
 	return ""
 }

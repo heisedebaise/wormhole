@@ -5,6 +5,7 @@ import (
 	"image/jpeg"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -34,17 +35,24 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func save(writer http.ResponseWriter, request *http.Request, uri string) {
+	request.ParseMultipartForm(1024 * 1024 * 1024)
 	if !util.CheckSign(request.Form) {
+		log.Println("fail to check sign !")
 		protocol.Send404(writer)
 
 		return
 	}
 
-	path := request.Header.Get("path")
-	name := request.Header.Get("name")
+	name := request.Form["name"][0]
 	empty := name == ""
 	if empty {
 		file, _, err := request.FormFile("file")
+		if err != nil {
+			protocol.Send404(writer)
+
+			return
+		}
+		defer file.Close()
 		if name, err = util.Md5FromReader(file); err != nil {
 			protocol.Send404(writer)
 
@@ -53,6 +61,7 @@ func save(writer http.ResponseWriter, request *http.Request, uri string) {
 		name = name + ".jpg"
 	}
 
+	path := request.Form["path"][0]
 	if path != "" {
 		os.MkdirAll(absolute(path), os.ModePerm)
 		name = path + "/" + name
@@ -174,9 +183,6 @@ func absolute(uri string) string {
 
 func main() {
 	if err := util.LoadConfig(&cfg, "image"); err != nil {
-		fmt.Println("Fail to load conf/image.json")
-		fmt.Println(err)
-
 		return
 	}
 
