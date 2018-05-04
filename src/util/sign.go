@@ -60,8 +60,13 @@ func CheckSign(form url.Values) bool {
 		log.Printf("use sign-name=%s.\n", signName)
 	}
 	str += getSecret(signName)
+	if Md5FromString(str) != form["sign"][0] {
+		log.Println("sign parameter illegal !")
 
-	return Md5FromString(str) == form["sign"][0]
+		return false
+	}
+
+	return true
 }
 
 func getSecret(name string) string {
@@ -74,7 +79,7 @@ func getSecret(name string) string {
 			return cfg.Secret
 		}
 	}
-	
+
 	log.Println("use default sign-name.")
 
 	return ""
