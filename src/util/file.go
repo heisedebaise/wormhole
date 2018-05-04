@@ -1,6 +1,7 @@
 package util
 
 import (
+	"log"
 	"os"
 	"strconv"
 )
@@ -23,9 +24,11 @@ func ByteSize(size string) int64 {
 		return 0
 	}
 
-	suffix := size[length-1 : length]
+	suffix := size[length-1:]
 	number, err := strconv.ParseInt(size[0:length-1], 10, 64)
 	if err != nil {
+		log.Printf("failure to convert %s to byte size %q\n", size, err)
+
 		return 0
 	}
 
@@ -45,8 +48,10 @@ func ByteSize(size string) int64 {
 		return number << 40
 	}
 
-	number, err = strconv.ParseInt(size[0:length-1], 10, 64)
+	number, err = strconv.ParseInt(size, 10, 64)
 	if err != nil {
+		log.Printf("failure to convert %s to byte size %q\n", size, err)
+
 		return 0
 	}
 

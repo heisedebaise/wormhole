@@ -40,7 +40,7 @@ func clean(path string, name string) {
 	}
 
 	if path != "" {
-		name = name[strings.LastIndex(name, "/")+1 : len(name)]
+		name = name[strings.LastIndex(name, "/")+1:]
 	}
 
 	names := strings.Split(name, ".")

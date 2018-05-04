@@ -2,7 +2,7 @@
 
 ## 上传图片
 
-上传图片的处理URI默认为`/save`，但可通过修改[图片配置](../conf/image.json)文件的`SaveUri`修改为其他URI地址。
+上传图片的处理URI默认为`/whimg/save`，但可通过修改[图片配置](../conf/image.json)文件的`Save`修改为其他URI地址。
 
 ### 参数
 
@@ -29,10 +29,10 @@ http://wormhole/path/name.$scale.$quality.jpg
 ```
 |名称|类型|说明|
 |---|---|---|
-|scale|int|缩放比例，百分比，必须大于0；小于100表示缩小；等于100则不缩放；大于100表示放大。|
-|quality|int|图片质量，1-100之间的数值。|
+|scale|int|缩放比例，以s结尾。百分比，必须大于0；小于100表示缩小；等于100则不缩放；大于100表示放大。|
+|quality|int|图片质量，以q结尾，1-100之间的数值。|
 
-如：`http://wormhole/path/name.50.75.jpg`表示输出图片缩小为`50%`，图片质量`75`。
+如：`http://wormhole/path/name.50s.75q.jpg`表示输出图片缩小为`50%`，图片质量`75`。scale和quality的位置可互换。
 
 ## 配置文件
 

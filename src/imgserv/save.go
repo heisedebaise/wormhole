@@ -81,5 +81,5 @@ func save(writer http.ResponseWriter, request *http.Request) {
 }
 
 func suffix(name string, handler *multipart.FileHeader) string {
-	return name + handler.Filename[strings.LastIndex(handler.Filename, "."):len(handler.Filename)]
+	return name + handler.Filename[strings.LastIndex(handler.Filename, "."):]
 }
