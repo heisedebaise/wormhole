@@ -7,17 +7,19 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 )
 
-type config struct {
+type sign struct {
 	Name   string
 	Secret string
 }
 
-var once sync.Once
-var cfgs []config
+var signCfg []sign
+
+func init() {
+	LoadConfig(&signCfg, "sign")
+}
 
 func CheckSign(form url.Values) bool {
 	if _, has := form["sign"]; !has {
@@ -70,17 +72,13 @@ func CheckSign(form url.Values) bool {
 }
 
 func getSecret(name string) string {
-	once.Do(func() {
-		LoadConfig(&cfgs, "sign")
-	})
-
-	for _, cfg := range cfgs {
+	for _, cfg := range signCfg {
 		if cfg.Name == name {
 			return cfg.Secret
 		}
 	}
 
-	log.Println("use default sign-name.")
+	log.Printf("use default sign name for %s.\n", name)
 
 	return ""
 }

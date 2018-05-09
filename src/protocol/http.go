@@ -3,6 +3,7 @@ package protocol
 import (
 	"log"
 	"net/http"
+	"strings"
 )
 
 func Http(host string, path string, handler func(writer http.ResponseWriter, request *http.Request)) {
@@ -20,6 +21,16 @@ func GetParam(request *http.Request, name string, defaultValue string) string {
 	}
 
 	return defaultValue
+}
+
+func GetIp(request *http.Request) string {
+	ip := request.RemoteAddr
+	ip = ip[0:strings.LastIndex(ip, ":")]
+	if ip == "[::1]" {
+		ip = "127.0.0.1"
+	}
+
+	return ip
 }
 
 func Send404(writer http.ResponseWriter) {

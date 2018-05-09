@@ -14,7 +14,7 @@ import (
 
 func save(writer http.ResponseWriter, request *http.Request) {
 	request.ParseMultipartForm(maxSize)
-	if !util.CheckSign(request.Form) {
+	if !util.InWhiteList(protocol.GetIp(request)) && !util.CheckSign(request.Form) {
 		protocol.Send404(writer)
 
 		return
