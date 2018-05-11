@@ -4,7 +4,12 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 )
+
+func FormatPath(path string) string {
+	return strings.Replace(path, "//", "/", -1)
+}
 
 func Exists(path string) bool {
 	_, err := os.Stat(path)

@@ -1,11 +1,9 @@
 package imgserv
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 	"util"
 )
 
@@ -27,36 +25,12 @@ func init() {
 	root, _ = filepath.Abs(cfg.Root)
 	os.MkdirAll(root, os.ModePerm)
 	root = root + "/"
-	cfg.Root = strings.Replace("/"+cfg.Root+"/", "//", "/", -1)
-	cfg.Save = strings.Replace(cfg.Root+cfg.Save, "//", "/", -1)
+	cfg.Root = util.FormatPath("/" + cfg.Root + "/")
+	cfg.Save = util.FormatPath(cfg.Root + cfg.Save)
 	maxSize = util.ByteSize(cfg.MaxSize)
-	log.Printf("image config:root=%s;save=%s;absolute path=%s;max size=%d\n", cfg.Root, cfg.Save, root, maxSize)
-}
-
-func clean(path string, name string) {
-	files, err := ioutil.ReadDir(absolute(path))
-	if err != nil {
-		return
-	}
-
-	if path != "" {
-		name = name[strings.LastIndex(name, "/")+1:]
-	}
-
-	names := strings.Split(name, ".")
-	for _, file := range files {
-		if file.IsDir() {
-			continue
-		}
-
-		ns := strings.Split(file.Name(), ".")
-		length := len(ns)
-		if length > 2 && ns[0] == names[0] && ns[length-1] == names[1] {
-			os.Remove(absolute(path + "/" + file.Name()))
-		}
-	}
+	log.Printf("image config:root=%s;save=%s;absolute path=%s;max uploadable size=%d=%s\n", cfg.Root, cfg.Save, root, maxSize, cfg.MaxSize)
 }
 
 func absolute(uri string) string {
-	return strings.Replace(root+uri, "//", "/", -1)
+	return util.FormatPath(root + uri)
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fileserv"
 	"imgserv"
 	"net/http"
 	"protocol"
@@ -18,6 +19,8 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 	uri := request.RequestURI
 	if strings.HasPrefix(uri, imgserv.Root()) {
 		imgserv.Handler(writer, request, uri)
+	} else if strings.HasPrefix(uri, fileserv.Root()) {
+		fileserv.Handler(writer, request, uri)
 	}
 }
 
