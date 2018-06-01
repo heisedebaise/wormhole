@@ -6,6 +6,7 @@ import (
 	"log"
 )
 
+// LoadConfig 加载配置文件。
 func LoadConfig(config interface{}, name string) (err error) {
 	data, err := ioutil.ReadFile("conf/" + name + ".json")
 	if err != nil {

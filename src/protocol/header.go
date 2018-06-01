@@ -6,7 +6,8 @@ import (
 	"strings"
 )
 
-func GetIp(request *http.Request) string {
+// GetIP 获取请求方IP地址。
+func GetIP(request *http.Request) string {
 	ip := request.RemoteAddr
 	ip = ip[0:strings.LastIndex(ip, ":")]
 	if ip == "[::1]" {
@@ -16,6 +17,7 @@ func GetIp(request *http.Request) string {
 	return ip
 }
 
+// AppendSuffix 添加文件名后缀。
 func AppendSuffix(name string, handler *multipart.FileHeader) string {
 	lastIndex := strings.LastIndex(handler.Filename, ".")
 	if lastIndex > -1 {

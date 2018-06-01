@@ -13,7 +13,7 @@ type config struct {
 	Listen string
 }
 
-var cfg config = config{":8192"}
+var cfg = config{":8192"}
 
 func handler(writer http.ResponseWriter, request *http.Request) {
 	uri := request.RequestURI
@@ -26,5 +26,5 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 
 func main() {
 	util.LoadConfig(&cfg, "http")
-	protocol.Http(cfg.Listen, "/", handler)
+	protocol.HTTP(cfg.Listen, "/", handler)
 }

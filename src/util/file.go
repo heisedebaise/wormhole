@@ -7,22 +7,26 @@ import (
 	"strings"
 )
 
+// FormatPath 格式化路径。
 func FormatPath(path string) string {
 	return strings.Replace(path, "//", "/", -1)
 }
 
+// Exists 检查路径是否存在。
 func Exists(path string) bool {
 	_, err := os.Stat(path)
 
 	return err == nil
 }
 
+// ExistsFile 检查文件是否存在。
 func ExistsFile(path string) bool {
 	info, err := os.Stat(path)
 
 	return err == nil && !info.IsDir()
 }
 
+// ByteSize 转换文件大小。
 func ByteSize(size string) int64 {
 	length := len(size)
 	if length == 0 {

@@ -6,24 +6,25 @@ import (
 )
 
 type whitelist struct {
-	Ip    []string
+	IP    []string `json:"Ip"`
 	RegEx []string
 }
 
 var whitelistCfg whitelist
-var hasWhitelistIp bool
+var hasWhitelistIP bool
 var hasWhitelistRegEx bool
 
 func init() {
 	LoadConfig(&whitelistCfg, "whitelist")
-	hasWhitelistIp = len(whitelistCfg.Ip) > 0
+	hasWhitelistIP = len(whitelistCfg.IP) > 0
 	hasWhitelistRegEx = len(whitelistCfg.RegEx) > 0
 	log.Printf("white list: %q\n", whitelistCfg)
 }
 
+// InWhiteList 校验是否存在于白名单内。
 func InWhiteList(ip string) bool {
-	if hasWhitelistIp {
-		for _, str := range whitelistCfg.Ip {
+	if hasWhitelistIP {
+		for _, str := range whitelistCfg.IP {
 			if ip == str {
 				return true
 			}

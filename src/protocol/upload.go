@@ -10,9 +10,10 @@ import (
 	"util"
 )
 
+// Upload 处理文件上传请求。
 func Upload(writer http.ResponseWriter, request *http.Request, maxSize int64, absRoot string, root string) (string, string, bool) {
 	request.ParseMultipartForm(maxSize)
-	if !util.InWhiteList(GetIp(request)) && !util.CheckSign(request.Form) {
+	if !util.InWhiteList(GetIP(request)) && !util.CheckSign(request.Form) {
 		Send404(writer)
 
 		return "", "", false

@@ -21,6 +21,7 @@ func init() {
 	LoadConfig(&signCfg, "sign")
 }
 
+// CheckSign 校验签名。
 func CheckSign(form url.Values) bool {
 	if _, has := form["sign"]; !has {
 		log.Println("no sign parameter !")
@@ -42,7 +43,7 @@ func CheckSign(form url.Values) bool {
 	}
 
 	var keys []string
-	for key, _ := range form {
+	for key := range form {
 		if key == "sign" {
 			continue
 		}

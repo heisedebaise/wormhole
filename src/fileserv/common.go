@@ -13,7 +13,7 @@ type config struct {
 	MaxSize string
 }
 
-var cfg config = config{"whfile", "save", "10M"}
+var cfg = config{"whfile", "save", "10M"}
 var root = cfg.Root
 var maxSize int64 = 10 << 20
 
