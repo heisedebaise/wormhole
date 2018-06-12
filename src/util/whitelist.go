@@ -6,7 +6,7 @@ import (
 )
 
 type whitelist struct {
-	IP    []string `json:"Ip"`
+	IP    []string
 	RegEx []string
 }
 

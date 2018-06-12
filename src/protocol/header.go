@@ -8,6 +8,12 @@ import (
 
 // GetIP 获取请求方IP地址。
 func GetIP(request *http.Request) string {
+	if cfg.RealIP != "" {
+		if realIP := request.Header.Get(cfg.RealIP); realIP != "" {
+			return realIP
+		}
+	}
+
 	ip := request.RemoteAddr
 	ip = ip[0:strings.LastIndex(ip, ":")]
 	if ip == "[::1]" {

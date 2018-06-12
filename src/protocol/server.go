@@ -6,10 +6,10 @@ import (
 )
 
 // HTTP 启动HTTP(S)服务。
-func HTTP(host string, path string, handler func(writer http.ResponseWriter, request *http.Request)) {
+func HTTP(path string, handler func(writer http.ResponseWriter, request *http.Request)) {
 	http.HandleFunc(path, handler)
-	log.Printf("listening on %s\n", host)
-	err := http.ListenAndServe(host, nil)
+	log.Printf("listening on %s\n", cfg.Listen)
+	err := http.ListenAndServe(cfg.Listen, nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
