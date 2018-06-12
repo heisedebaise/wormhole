@@ -7,7 +7,13 @@ import (
 
 // HTTP 启动HTTP(S)服务。
 func HTTP(path string, handler func(writer http.ResponseWriter, request *http.Request)) {
-	http.HandleFunc(path, handler)
+	http.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
+		if cfg.Cors {
+			writer.Header().Set("Access-Control-Allow-Origin", "*")
+		}
+		handler(writer, request)
+	})
+
 	log.Printf("listening on %s\n", cfg.Listen)
 	err := http.ListenAndServe(cfg.Listen, nil)
 	if err != nil {
