@@ -18,7 +18,7 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 	} else if strings.HasPrefix(uri, fileserv.Root()) {
 		fileserv.Handler(writer, request, uri)
 	}
-	log.Printf("uri=%s;remote=%s;time=%dms\n", uri, protocol.GetIP(request), (time.Now().UnixNano()-now)/1000000)
+	log.Printf("uri=%s;remote=%s;time=%fms\n", uri, protocol.GetIP(request), float64((time.Now().UnixNano()-now))/1000000)
 }
 
 func main() {
