@@ -14,6 +14,6 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) {
 		protocol.Send404(writer)
 		log.Printf("not exists or read dir %s %q\n", path, err)
 	} else {
-		http.ServeFile(writer, request, path)
+		protocol.ServeFile(writer, request, info, path)
 	}
 }

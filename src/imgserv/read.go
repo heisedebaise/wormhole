@@ -22,7 +22,7 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) {
 			protocol.Send404(writer)
 			log.Printf("read dir %s\n", uri)
 		} else {
-			serveFile(writer, request, info, path)
+			protocol.ServeFile(writer, request, info, path)
 		}
 
 		return
@@ -103,7 +103,7 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) {
 		return
 	}
 
-	serveFile(writer, request, nil, path)
+	protocol.ServeFile(writer, request, nil, path)
 }
 
 func getScaleQuality(names []string) (scale int, quality int, err error) {
@@ -125,19 +125,4 @@ func getScaleQuality(names []string) (scale int, quality int, err error) {
 	}
 
 	return scale, quality, nil
-}
-
-func serveFile(writer http.ResponseWriter, request *http.Request, info os.FileInfo, path string) {
-	if info == nil {
-		info, _ = os.Stat(path)
-	}
-	etag := strconv.FormatInt(info.ModTime().UnixNano(), 16)
-	if protocol.GetHeader(request, "If-None-Match") == etag {
-		protocol.SendCode(writer, 304)
-
-		return
-	}
-
-	protocol.SetHeader(writer, "ETag", etag)
-	http.ServeFile(writer, request, path)
 }
