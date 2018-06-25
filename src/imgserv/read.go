@@ -130,9 +130,9 @@ func getScaleQuality(names []string) (scale int, quality int, err error) {
 func serveFile(writer http.ResponseWriter, request *http.Request, path string) {
 	log.Println("##########################")
 	for key, value := range request.Header {
-		log.Printf("%s=%s\n", key, value)
+		log.Printf("%s:%s=%s\n", path, key, value)
 	}
-	
+
 	info, _ := os.Stat(path)
 	etag := strconv.FormatInt(info.ModTime().UnixNano(), 16)
 	protocol.SetHeader(writer, "ETag", etag)
