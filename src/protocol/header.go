@@ -9,7 +9,7 @@ import (
 // GetIP 获取请求方IP地址。
 func GetIP(request *http.Request) string {
 	if cfg.RealIP != "" {
-		if realIP := request.Header.Get(cfg.RealIP); realIP != "" {
+		if realIP := GetHeader(request, cfg.RealIP); realIP != "" {
 			return realIP
 		}
 	}
@@ -21,6 +21,11 @@ func GetIP(request *http.Request) string {
 	}
 
 	return ip
+}
+
+// GetHeader 获取请求头信息。
+func GetHeader(request *http.Request, name string) string {
+	return request.Header.Get(name)
 }
 
 // AppendSuffix 添加文件名后缀。
@@ -37,4 +42,9 @@ func AppendSuffix(name string, handler *multipart.FileHeader) string {
 	}
 
 	return name
+}
+
+// SetHeader 设置返回头信息。
+func SetHeader(writer http.ResponseWriter, name string, value string) {
+	writer.Header().Set(name, value)
 }
