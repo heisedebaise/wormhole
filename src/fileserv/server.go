@@ -13,7 +13,7 @@ func Root() string {
 // Handler 处理HTTP(S)请求。
 func Handler(writer http.ResponseWriter, request *http.Request, uri string) {
 	if uri == cfg.Save {
-		protocol.Upload(writer, request, maxSize, root, cfg.Root)
+		protocol.Save(writer, request, maxSize, root, cfg.Root)
 	} else {
 		read(writer, request, uri)
 	}

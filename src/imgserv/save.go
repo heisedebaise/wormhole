@@ -9,8 +9,7 @@ import (
 )
 
 func save(writer http.ResponseWriter, request *http.Request) {
-	path, name, upload := protocol.Upload(writer, request, maxSize, root, cfg.Root)
-	if upload {
+	if path, name, success := protocol.Save(writer, request, maxSize, root, cfg.Root); success {
 		clean(path, name)
 	}
 }
