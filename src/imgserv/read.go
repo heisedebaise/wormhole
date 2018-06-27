@@ -1,7 +1,9 @@
 package imgserv
 
 import (
+	"image"
 	"image/jpeg"
+	"image/png"
 	"log"
 	"net/http"
 	"os"
@@ -39,9 +41,9 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) {
 	}
 
 	suffix := names[length-1]
-	if suffix != "jpg" && suffix != "jpeg" {
+	if suffix != "jpg" && suffix != "jpeg" && suffix != "png" {
 		protocol.Send404(writer)
-		log.Printf("not a jpeg file %s\n", uri)
+		log.Printf("not a jpeg|png file %s\n", uri)
 
 		return
 	}
@@ -49,7 +51,7 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) {
 	origin := absolute(uri[0:index] + names[0] + "." + suffix)
 	if !util.Exists(origin) {
 		protocol.Send404(writer)
-		log.Printf("origin jpeg file not exists %s\n", uri)
+		log.Printf("origin jpeg|png file not exists %s\n", uri)
 
 		return
 	}
@@ -65,13 +67,13 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) {
 	file, err := os.Open(origin)
 	if err != nil {
 		protocol.Send404(writer)
-		log.Printf("fail to read origin jpeg file %s %q\n", uri, err)
+		log.Printf("fail to read origin jpeg|png file %s %q\n", uri, err)
 
 		return
 	}
 	defer file.Close()
 
-	image, err := jpeg.Decode(file)
+	image, err := decode(suffix, file)
 	if err != nil {
 		protocol.Send404(writer)
 		log.Printf("fail to decode origin jpeg file %s %q\n", uri, err)
@@ -96,7 +98,7 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) {
 		quality = 100
 	}
 
-	if err := jpeg.Encode(out, image, &jpeg.Options{Quality: quality}); err != nil {
+	if err := encode(suffix, out, image, quality); err != nil {
 		protocol.Send404(writer)
 		log.Printf("fail to encode scale[%d]|quality[%d] jpeg file %s %q\n", scale, quality, uri, err)
 
@@ -125,4 +127,20 @@ func getScaleQuality(names []string) (scale int, quality int, err error) {
 	}
 
 	return scale, quality, nil
+}
+
+func decode(suffix string, file *os.File) (image.Image, error) {
+	if suffix == "png" {
+		return png.Decode(file)
+	}
+
+	return jpeg.Decode(file)
+}
+
+func encode(suffix string, out *os.File, image image.Image, quality int) error {
+	if suffix == "png" {
+		return png.Encode(out, image)
+	}
+
+	return jpeg.Encode(out, image, &jpeg.Options{Quality: quality})
 }

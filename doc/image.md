@@ -23,7 +23,7 @@
 
 ### JPEG图片缩放与压缩
 
-通过在`JPEG`图片名与后缀间添加参数可对图片进行压缩与缩放：
+通过在`JPEG`或`PNG`图片名与后缀间添加参数可对图片进行压缩与缩放：
 ```
 http://wormhole/path/name.$scale.$quality.jpg
 ```
