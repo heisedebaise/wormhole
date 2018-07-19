@@ -15,70 +15,63 @@ import (
 	"github.com/nfnt/resize"
 )
 
-func read(writer http.ResponseWriter, request *http.Request, uri string) {
+func read(writer http.ResponseWriter, request *http.Request, uri string) int {
 	uri = uri[len(cfg.Root):]
 	path := absolute(uri)
 	info, err := os.Stat(path)
 	if err == nil {
 		if info.IsDir() {
-			protocol.Send404(writer)
 			log.Printf("read dir %s\n", uri)
-		} else {
-			protocol.ServeFile(writer, request, info, path)
+
+			return protocol.Send404(writer)
 		}
 
-		return
+		return protocol.ServeFile(writer, request, info, path)
 	}
 
 	index := strings.LastIndex(uri, "/") + 1
 	names := strings.Split(uri[index:], ".")
 	length := len(names)
 	if length <= 2 {
-		protocol.Send404(writer)
 		log.Printf("length<=2 %s\n", uri)
 
-		return
+		return protocol.Send404(writer)
 	}
 
 	suffix := names[length-1]
 	if suffix != "jpg" && suffix != "jpeg" && suffix != "png" {
-		protocol.Send404(writer)
 		log.Printf("not a jpeg|png file %s\n", uri)
 
-		return
+		return protocol.Send404(writer)
 	}
 
 	origin := absolute(uri[0:index] + names[0] + "." + suffix)
 	if !util.Exists(origin) {
-		protocol.Send404(writer)
 		log.Printf("origin jpeg|png file not exists %s\n", uri)
 
-		return
+		return protocol.Send404(writer)
 	}
 
 	scale, quality, err := getScaleQuality(names)
 	if err != nil || (scale == 0 && quality == 0) {
-		protocol.Send404(writer)
 		log.Printf("fail to get scale[%d] or quality[%d] %s %q\n", scale, quality, uri, err)
 
-		return
+		return protocol.Send404(writer)
 	}
 
 	file, err := os.Open(origin)
 	if err != nil {
-		protocol.Send404(writer)
 		log.Printf("fail to read origin jpeg|png file %s %q\n", uri, err)
 
-		return
+		return protocol.Send404(writer)
 	}
 	defer file.Close()
 
 	image, err := decode(suffix, file)
 	if err != nil {
-		protocol.Send404(writer)
 		log.Printf("fail to decode origin jpeg file %s %q\n", uri, err)
 
-		return
+		return protocol.Send404(writer)
 	}
 
 	if scale > 0 {
@@ -87,10 +80,9 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) {
 
 	out, err := os.Create(path)
 	if err != nil {
-		protocol.Send404(writer)
 		log.Printf("fail to create scale|quality jpeg file %s %q\n", uri, err)
 
-		return
+		return protocol.Send404(writer)
 	}
 	defer out.Close()
 
@@ -99,13 +91,12 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) {
 	}
 
 	if err := encode(suffix, out, image, quality); err != nil {
-		protocol.Send404(writer)
 		log.Printf("fail to encode scale[%d]|quality[%d] jpeg file %s %q\n", scale, quality, uri, err)
 
-		return
+		return protocol.Send404(writer)
 	}
 
-	protocol.ServeFile(writer, request, nil, path)
+	return protocol.ServeFile(writer, request, nil, path)
 }
 
 func getScaleQuality(names []string) (scale int, quality int, err error) {

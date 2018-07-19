@@ -7,13 +7,15 @@ import (
 	"protocol"
 )
 
-func read(writer http.ResponseWriter, request *http.Request, uri string) {
+func read(writer http.ResponseWriter, request *http.Request, uri string) int {
 	uri = uri[len(cfg.Root):]
 	path := absolute(uri)
-	if info, err := os.Stat(path); err != nil || info.IsDir() {
-		protocol.Send404(writer)
+	info, err := os.Stat(path)
+	if err != nil || info.IsDir() {
 		log.Printf("not exists or read dir %s %q\n", path, err)
-	} else {
-		protocol.ServeFile(writer, request, info, path)
+
+		return protocol.Send404(writer)
 	}
+
+	return protocol.ServeFile(writer, request, info, path)
 }

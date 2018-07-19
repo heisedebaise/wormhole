@@ -11,12 +11,10 @@ import (
 )
 
 // Save 处理文件上传请求。
-func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absRoot string, root string) (string, string, bool) {
+func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absRoot string, root string) (string, string, int) {
 	request.ParseMultipartForm(maxSize)
 	if !util.InWhiteList(GetIP(request)) && !util.CheckSign(request.Form) {
-		Send404(writer)
-
-		return "", "", false
+		return "", "", Send404(writer)
 	}
 
 	name := GetParam(request, "name", "")
@@ -25,16 +23,14 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 		file, handler, err := request.FormFile("file")
 		if err != nil {
 			log.Printf("fail to load file: %q\n", err)
-			Send404(writer)
 
-			return "", "", false
+			return "", "", Send404(writer)
 		}
 		defer file.Close()
 		if name, err = util.Md5FromReader(file); err != nil {
 			log.Printf("fail to sum md5: %q\n", err)
-			Send404(writer)
 
-			return "", "", false
+			return "", "", Send404(writer)
 		}
 
 		name = AppendSuffix(name, handler)
@@ -47,15 +43,14 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 	if empty && util.Exists(util.FormatPath(absRoot+path+"/"+name)) {
 		fmt.Fprintf(writer, "%s", util.FormatPath(root+path+"/"+name))
 
-		return path, name, false
+		return path, name, 200
 	}
 
 	file, handler, err := request.FormFile("file")
 	if err != nil {
 		log.Printf("fail to load file: %q\n", err)
-		Send404(writer)
 
-		return "", "", false
+		return "", "", Send404(writer)
 	}
 	defer file.Close()
 
@@ -66,14 +61,13 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 	out, err := os.OpenFile(util.FormatPath(absRoot+path+"/"+name), os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		log.Printf("fail to open file: %q\n", err)
-		Send404(writer)
 
-		return "", "", false
+		return "", "", Send404(writer)
 	}
 	defer out.Close()
 	io.Copy(out, file)
 
 	fmt.Fprintf(writer, "%s", util.FormatPath(root+path+"/"+name))
 
-	return path, name, true
+	return path, name, 200
 }

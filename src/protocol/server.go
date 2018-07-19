@@ -22,11 +22,13 @@ func HTTP(path string, handler func(writer http.ResponseWriter, request *http.Re
 }
 
 // Send404 发送404。
-func Send404(writer http.ResponseWriter) {
-	SendCode(writer, 404)
+func Send404(writer http.ResponseWriter) int {
+	return SendCode(writer, 404)
 }
 
 // SendCode 发送结果码。
-func SendCode(writer http.ResponseWriter, code int) {
+func SendCode(writer http.ResponseWriter, code int) int {
 	writer.WriteHeader(code)
+
+	return code
 }

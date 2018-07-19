@@ -7,17 +7,17 @@ import (
 )
 
 // ServeFile 读取文件并返回。
-func ServeFile(writer http.ResponseWriter, request *http.Request, info os.FileInfo, path string) {
+func ServeFile(writer http.ResponseWriter, request *http.Request, info os.FileInfo, path string)int {
 	if info == nil {
 		info, _ = os.Stat(path)
 	}
 	etag := strconv.FormatInt(info.ModTime().UnixNano(), 16)
 	if GetHeader(request, "If-None-Match") == etag {
-		SendCode(writer, 304)
-
-		return
+	return	SendCode(writer, 304)
 	}
 
 	SetHeader(writer, "ETag", etag)
 	http.ServeFile(writer, request, path)
+
+	return 200
 }

@@ -8,10 +8,13 @@ import (
 	"strings"
 )
 
-func save(writer http.ResponseWriter, request *http.Request) {
-	if path, name, success := protocol.Save(writer, request, maxSize, root, cfg.Root); success {
+func save(writer http.ResponseWriter, request *http.Request) int {
+	path, name, code := protocol.Save(writer, request, maxSize, root, cfg.Root)
+	if code == 200 {
 		clean(path, name)
 	}
+
+	return code
 }
 
 func clean(path string, name string) {

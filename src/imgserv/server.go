@@ -10,10 +10,10 @@ func Root() string {
 }
 
 // Handler 处理HTTP(S)请求。
-func Handler(writer http.ResponseWriter, request *http.Request, uri string) {
+func Handler(writer http.ResponseWriter, request *http.Request, uri string) int {
 	if uri == cfg.Save {
-		save(writer, request)
-	} else {
-		read(writer, request, uri)
+		return save(writer, request)
 	}
+
+	return read(writer, request, uri)
 }
