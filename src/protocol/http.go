@@ -14,9 +14,8 @@ func HTTP(path string, handler func(writer http.ResponseWriter, request *http.Re
 		handler(writer, request)
 	})
 
-	log.Printf("listening on %s\n", cfg.Listen)
-	err := http.ListenAndServe(cfg.Listen, nil)
-	if err != nil {
+	log.Printf("http listening on %s\n", cfg.Listen)
+	if err := http.ListenAndServe(cfg.Listen, nil); err != nil {
 		log.Fatalln(err)
 	}
 }

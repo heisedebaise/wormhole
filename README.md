@@ -5,3 +5,7 @@ Wormhole旨在构建一个快速响应的静态资源、反向代理等服务的
 [图片服务](doc/image.md)
 
 [文件服务](doc/file.md)
+
+## docker
+
+[构建](https://github.com/heisedebaise/docker/tree/master/wormhole:latest)

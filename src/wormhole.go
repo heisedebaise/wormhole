@@ -6,7 +6,9 @@ import (
 	"log"
 	"net/http"
 	"protocol"
+	"strconv"
 	"strings"
+	"synch"
 	"time"
 )
 
@@ -25,5 +27,13 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func main() {
+	synch.Listen()
+	go func() {
+		for i := 0; i < 100; i++ {
+			time.Sleep(time.Second)
+			synch.Send([]byte("hello wormhole " + strconv.Itoa(i)))
+		}
+	}()
+
 	protocol.HTTP("/", handler)
 }
