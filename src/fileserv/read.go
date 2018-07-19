@@ -1,10 +1,10 @@
 package fileserv
 
 import (
+	"httpserv"
 	"log"
 	"net/http"
 	"os"
-	"protocol"
 )
 
 func read(writer http.ResponseWriter, request *http.Request, uri string) int {
@@ -14,8 +14,8 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) int {
 	if err != nil || info.IsDir() {
 		log.Printf("not exists or read dir %s %q\n", path, err)
 
-		return protocol.Send404(writer)
+		return httpserv.Send404(writer)
 	}
 
-	return protocol.ServeFile(writer, request, info, path)
+	return httpserv.ServeFile(writer, request, info, path)
 }

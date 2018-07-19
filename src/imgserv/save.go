@@ -1,15 +1,15 @@
 package imgserv
 
 import (
+	"httpserv"
 	"io/ioutil"
 	"net/http"
 	"os"
-	"protocol"
 	"strings"
 )
 
 func save(writer http.ResponseWriter, request *http.Request) int {
-	path, name, code := protocol.Save(writer, request, maxSize, root, cfg.Root)
+	path, name, code := httpserv.Save(writer, request, maxSize, root, cfg.Root)
 	if code == 200 {
 		clean(path, name)
 	}

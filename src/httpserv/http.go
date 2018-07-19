@@ -1,4 +1,4 @@
-package protocol
+package httpserv
 
 import (
 	"log"
