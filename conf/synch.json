@@ -1,0 +1,7 @@
+{
+    "Listen": ":2048",
+    "Nodes": [
+        "127.0.0.1:2048"
+    ],
+    "Argot": "wormhome synch argot"
+}
