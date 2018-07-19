@@ -26,7 +26,9 @@ func connect() {
 
 		if err := write(conn, []byte(cfg.Argot)); err == nil {
 			read(conn, func(message []byte) bool {
-				if string(message) != id {
+				if string(message) == id {
+					conn.Close()
+				} else {
 					servers[node] = conn
 				}
 
