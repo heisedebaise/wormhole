@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"synch"
+	"rsync"
 	"time"
 )
 
@@ -27,11 +27,11 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func main() {
-	synch.Listen()
+	rsync.Listen()
 	go func() {
 		for i := 0; i < 100; i++ {
 			time.Sleep(time.Second)
-			synch.Send([]byte("hello wormhole " + strconv.Itoa(i)))
+			rsync.Send([]byte("hello wormhole " + strconv.Itoa(i)))
 		}
 	}()
 

@@ -1,4 +1,4 @@
-package synch
+package rsync
 
 import (
 	"util"
@@ -12,10 +12,10 @@ type config struct {
 	Argot  string
 }
 
-var cfg = config{":2048", []string{"127.0.0.1:2048"}, "wormhome synch argot"}
+var cfg = config{":2048", []string{"127.0.0.1:2048"}, "wormhome rsync argot"}
 var id string
 
 func init() {
-	util.LoadConfig(&cfg, "synch")
+	util.LoadConfig(&cfg, "rsync")
 	id = uuid.New().String()
 }

@@ -1,4 +1,4 @@
-package synch
+package rsync
 
 import (
 	"log"
@@ -18,7 +18,7 @@ func listen() {
 		return
 	}
 
-	log.Printf("synch listening on %s\n", cfg.Listen)
+	log.Printf("rsync listening on %s\n", cfg.Listen)
 	defer listener.Close()
 
 	go connect()

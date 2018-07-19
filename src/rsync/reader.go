@@ -1,4 +1,4 @@
-package synch
+package rsync
 
 import (
 	"log"
