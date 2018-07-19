@@ -38,12 +38,15 @@ func receive(conn net.Conn) {
 	trustable := false
 	read(conn, func(message []byte) bool {
 		if !trustable {
-			if trustable = trust(message); trustable {
-				log.Printf("同步认证[%s]成功\n", conn.RemoteAddr().String())
+			argot := string(message)
+			if trustable = argot == cfg.Argot; trustable {
+				log.Printf("remote [%s] argot is right\n", conn.RemoteAddr().String())
 				write(conn, []byte(id))
 
 				return true
 			}
+
+			log.Printf("illegal remote [%s] argot [%s]\n", conn.RemoteAddr().String(), argot)
 
 			return false
 		}
@@ -52,15 +55,4 @@ func receive(conn net.Conn) {
 
 		return true
 	})
-}
-
-func trust(message []byte) bool {
-	argot := string(message)
-	if argot == cfg.Argot {
-		return true
-	}
-
-	log.Printf("同步认证失败[%s!=%s]！\n", argot, cfg.Argot)
-
-	return false
 }
