@@ -1,5 +1,5 @@
 {
-    "Listen": ":8192",
+    "Listen": ":8888",
     "RealIP": "",
     "Cors": false
 }

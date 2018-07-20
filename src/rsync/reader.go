@@ -1,18 +1,24 @@
 package rsync
 
 import (
+	"io"
 	"log"
 	"net"
+	"time"
 )
 
-func read(conn net.Conn, callback func(message []byte) bool) {
+func read(conn net.Conn, callback func(message []byte) bool, eof func(conn net.Conn)) {
 	var messages []byte
 	var message []byte
 	buffer := make([]byte, 1024)
 	for {
 		n, err := conn.Read(buffer)
 		if err != nil {
-			log.Println(err)
+			if err == io.EOF {
+				eof(conn)
+			} else {
+				log.Println(err)
+			}
 
 			break
 		}
@@ -45,4 +51,14 @@ func readMessage(messages []byte) ([]byte, []byte) {
 	}
 
 	return messages[8:size], messages[size:]
+}
+
+func alive(conn net.Conn) bool {
+	buffer := make([]byte, 1024)
+	conn.SetReadDeadline(time.Now().Add(time.Millisecond))
+	if _, err := conn.Read(buffer); err == io.EOF {
+		return false
+	}
+
+	return true
 }

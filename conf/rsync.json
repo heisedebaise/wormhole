@@ -1,7 +1,9 @@
 {
-    "Listen": ":2048",
+    "Listen": ":4096",
     "Nodes": [
-        "127.0.0.1:2048"
+        "192.168.1.101:2048",
+        "192.168.1.101:4096"
     ],
-    "Argot": "wormhome synch argot"
+    "Argot": "wormhome synch argot",
+    "ReConnect": 5
 }

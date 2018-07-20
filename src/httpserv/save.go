@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"rsync"
 	"strings"
 	"util"
 )
@@ -58,7 +59,8 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 		name = AppendSuffix(name, handler)
 	}
 
-	out, err := os.OpenFile(util.FormatPath(absRoot+path+"/"+name), os.O_WRONLY|os.O_CREATE, 0666)
+	absPath := util.FormatPath(absRoot + path + "/" + name)
+	out, err := os.OpenFile(absPath, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		log.Printf("fail to open file: %q\n", err)
 
@@ -67,7 +69,10 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 	defer out.Close()
 	io.Copy(out, file)
 
+	uri := util.FormatPath(root + path + "/" + name)
 	fmt.Fprintf(writer, "%s", util.FormatPath(root+path+"/"+name))
+
+	rsync.SendFile(uri, absPath)
 
 	return path, name, 200
 }

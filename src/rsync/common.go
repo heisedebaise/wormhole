@@ -7,12 +7,13 @@ import (
 )
 
 type config struct {
-	Listen string
-	Nodes  []string
-	Argot  string
+	Listen    string
+	Nodes     []string
+	Argot     string
+	ReConnect int
 }
 
-var cfg = config{":2048", []string{"127.0.0.1:2048"}, "wormhome rsync argot"}
+var cfg = config{":2048", []string{"127.0.0.1:2048"}, "wormhome rsync argot", 5}
 var id string
 
 func init() {

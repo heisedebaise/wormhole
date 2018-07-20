@@ -6,9 +6,8 @@ import (
 	"imgserv"
 	"log"
 	"net/http"
-	"strconv"
-	"strings"
 	"rsync"
+	"strings"
 	"time"
 )
 
@@ -28,12 +27,6 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 
 func main() {
 	rsync.Listen()
-	go func() {
-		for i := 0; i < 100; i++ {
-			time.Sleep(time.Second)
-			rsync.Send([]byte("hello wormhole " + strconv.Itoa(i)))
-		}
-	}()
 
 	httpserv.HTTP("/", handler)
 }

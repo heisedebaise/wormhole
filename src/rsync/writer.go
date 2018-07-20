@@ -1,6 +1,8 @@
 package rsync
 
-import "net"
+import (
+	"net"
+)
 
 func write(conn net.Conn, bytes []byte) error {
 	nSize := len(bytes) + 8
