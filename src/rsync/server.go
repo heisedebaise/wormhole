@@ -4,7 +4,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net"
+	"os"
 	"path/filepath"
+	"strings"
 )
 
 // Listen 启动同步监听。
@@ -70,9 +72,9 @@ func file(message []byte) {
 		return
 	}
 
-	// if err = os.MkdirAll(path[:strings.LastIndex(path, "/")], 0755); err != nil {
-	// 	return
-	// }
+	if err = os.MkdirAll(path[:strings.LastIndex(path, "/")], 0755); err != nil {
+		return
+	}
 
 	ioutil.WriteFile(path, message[length:], 0755)
 }
