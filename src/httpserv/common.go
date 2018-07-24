@@ -17,7 +17,7 @@ type ssl struct {
 	Key    string
 }
 
-var cfg = config{":8192", "", false, ssl{"", "", ""}}
+var cfg = config{":8192", "", false, ssl{":8443", "conf/ssl/wormhole.crt", "conf/ssl/wormhole.key"}}
 
 func init() {
 	util.LoadConfig(&cfg, "http")
