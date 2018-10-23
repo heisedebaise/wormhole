@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func read(writer http.ResponseWriter, request *http.Request, uri string) int {
@@ -16,6 +17,8 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) int {
 
 		return httpserv.Send404(writer)
 	}
+
+	httpserv.SetHeader(writer, "Content-Disposition", "attachment;filename="+uri[strings.LastIndex(uri, "/")+1:])
 
 	return httpserv.ServeFile(writer, request, info, path)
 }
