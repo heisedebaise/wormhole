@@ -4,10 +4,11 @@ dir=`pwd`
 export GOPATH=$GOPATH:$dir
 echo "using GOPATH=$GOPATH"
 
-echo "installing github.com/google/uuid ..."
-go get github.com/google/uuid
-echo "installing github.com/nfnt/resize ..."
-go get github.com/nfnt/resize
+for name in github.com/google/uuid github.com/nfnt/resize github.com/gorilla/websocket
+do
+    echo "installing $name ..."
+    go get $name
+done
 
 if [ -n "ls src/*" ]; then
     for file in src/*; do

@@ -10,7 +10,11 @@ func HTTP(path string, handler func(writer http.ResponseWriter, request *http.Re
 	http.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
 		if cfg.Cors {
 			writer.Header().Set("Access-Control-Allow-Origin", "*")
+			SendCode(writer, 204)
+
+			return
 		}
+		
 		handler(writer, request)
 	})
 
