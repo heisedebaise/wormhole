@@ -2,6 +2,7 @@ package wserv
 
 import (
 	"log"
+	"net/http"
 	"util"
 
 	"github.com/gorilla/websocket"
@@ -25,6 +26,10 @@ var upgrader = websocket.Upgrader{}
 func init() {
 	if err := util.LoadConfig(&cfg, "websocket"); err != nil {
 		return
+	}
+
+	upgrader.CheckOrigin = func(request *http.Request) bool {
+		return true
 	}
 
 	cfg.Root = util.FormatPath("/" + cfg.Root)

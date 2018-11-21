@@ -1,12 +1,8 @@
 package rsync
 
 import (
-	"io/ioutil"
 	"log"
 	"net"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 // Listen 启动同步监听。
@@ -54,27 +50,12 @@ func receive(conn net.Conn) {
 			return false
 		}
 
-		if message[0] == 1 {
-			file(message)
+		if message[0] == fileFlag {
+			saveFile(message)
 		}
 
 		return true
 	}, func(conn net.Conn) {
 		log.Printf("remote [%s] has closed\n", conn.RemoteAddr().String())
 	})
-}
-
-func file(message []byte) {
-	length := (int(message[1]) << 8) + int(message[2]) + 3
-	uri := string(message[3:length])
-	path, err := filepath.Abs(uri[1:])
-	if err != nil {
-		return
-	}
-
-	if err = os.MkdirAll(path[:strings.LastIndex(path, "/")], 0755); err != nil {
-		return
-	}
-
-	ioutil.WriteFile(path, message[length:], 0755)
 }

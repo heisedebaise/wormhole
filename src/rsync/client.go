@@ -61,20 +61,33 @@ func reconnect() {
 
 // SendFile 发送文件
 func SendFile(uri string, path string) {
-	var buffer bytes.Buffer
-	buffer.WriteByte(byte(1))
-	length := len(uri)
-	buffer.WriteByte(byte((length >> 8) & 0xff))
-	buffer.WriteByte(byte(length & 0xff))
-	buffer.WriteString(uri)
 	file, err := os.Open(path)
 	if err != nil {
 		return
 	}
 
+	defer file.Close()
+	buffer := buffer(fileFlag, uri)
 	buffer.ReadFrom(file)
-	file.Close()
 	go send(buffer.Bytes())
+}
+
+// SendMemory 发送内存数据
+func SendMemory(unique string, message []byte) {
+	buffer := buffer(memoryFlag, unique)
+	buffer.Write(message)
+	go send(buffer.Bytes())
+}
+
+func buffer(flag byte, str string) bytes.Buffer {
+	var buffer bytes.Buffer
+	buffer.WriteByte(flag)
+	length := len(str)
+	buffer.WriteByte(byte((length >> 8) & 0xff))
+	buffer.WriteByte(byte(length & 0xff))
+	buffer.WriteString(str)
+
+	return buffer
 }
 
 func send(bytes []byte) {

@@ -1,7 +1,12 @@
 package rsync
 
 import (
+	"io/ioutil"
+	"memory"
 	"net"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 func write(conn net.Conn, bytes []byte) error {
@@ -19,4 +24,30 @@ func write(conn net.Conn, bytes []byte) error {
 	}
 
 	return nil
+}
+
+func saveFile(message []byte) {
+	length, uri := readLengghUnique(message)
+	path, err := filepath.Abs(uri[1:])
+	if err != nil {
+		return
+	}
+
+	if err = os.MkdirAll(path[:strings.LastIndex(path, "/")], 0755); err != nil {
+		return
+	}
+
+	ioutil.WriteFile(path, message[length:], 0755)
+}
+
+func putMemory(message []byte) {
+	length, unique := readLengghUnique(message)
+	memory.Put(unique, message[length:])
+}
+
+func readLengghUnique(message []byte) (int, string) {
+	length := (int(message[1]) << 8) + int(message[2]) + 3
+	unique := string(message[3:length])
+
+	return length, unique
 }
