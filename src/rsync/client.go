@@ -59,24 +59,28 @@ func reconnect() {
 	}
 }
 
-// SendFile 发送文件
+// SendFile 发送文件。
 func SendFile(uri string, path string) {
-	file, err := os.Open(path)
-	if err != nil {
-		return
-	}
+	go func() {
+		file, err := os.Open(path)
+		if err != nil {
+			return
+		}
 
-	defer file.Close()
-	buffer := buffer(fileFlag, uri)
-	buffer.ReadFrom(file)
-	go send(buffer.Bytes())
+		defer file.Close()
+		buffer := buffer(FileFlag, uri)
+		buffer.ReadFrom(file)
+		send(buffer.Bytes())
+	}()
 }
 
-// SendMemory 发送内存数据
-func SendMemory(unique string, message []byte) {
-	buffer := buffer(memoryFlag, unique)
-	buffer.Write(message)
-	go send(buffer.Bytes())
+// SendBytes 发送内存数据。
+func SendBytes(flag byte, unique string, bytes []byte) {
+	go func() {
+		buffer := buffer(flag, unique)
+		buffer.Write(bytes)
+		send(buffer.Bytes())
+	}()
 }
 
 func buffer(flag byte, str string) bytes.Buffer {

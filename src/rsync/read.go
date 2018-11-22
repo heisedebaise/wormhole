@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"time"
+	"util"
 )
 
 func read(conn net.Conn, callback func(message []byte) bool, eof func(conn net.Conn)) {
@@ -36,21 +37,17 @@ func read(conn net.Conn, callback func(message []byte) bool, eof func(conn net.C
 }
 
 func readMessage(messages []byte) ([]byte, []byte) {
-	length := len(messages)
-	if length < 8 {
+	length := uint32(len(messages))
+	if length < 4 {
 		return nil, messages
 	}
 
-	size := 0
-	for i := 0; i < 8; i++ {
-		size = (size << 8) + int(messages[i])
-	}
-
+	size := util.BytesToUint32(messages[:4]) + 4
 	if length < size {
 		return nil, messages
 	}
 
-	return messages[8:size], messages[size:]
+	return messages[4:size], messages[size:]
 }
 
 func alive(conn net.Conn) bool {

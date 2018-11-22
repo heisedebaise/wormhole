@@ -2,12 +2,11 @@ package memory
 
 // Get 获取缓存数据。
 func Get(unique string) []byte {
-	data, ok := bytes[unique]
-	if !ok {
-		return nil
+	if data, ok := bytes[unique]; ok {
+		update(unique, true)
+
+		return data
 	}
 
-	update(unique)
-
-	return data
+	return nil
 }

@@ -50,8 +50,10 @@ func receive(conn net.Conn) {
 			return false
 		}
 
-		if message[0] == fileFlag {
-			saveFile(message)
+		if storage, ok := storages[message[0]]; ok {
+			length := (int(message[1]) << 8) + int(message[2]) + 3
+			unique := string(message[3:length])
+			storage(unique, message[length:])
 		}
 
 		return true
