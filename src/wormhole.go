@@ -1,6 +1,7 @@
 package main
 
 import (
+	"auth"
 	"fileserv"
 	"httpserv"
 	"imgserv"
@@ -21,7 +22,9 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 		code = imgserv.Handler(writer, request, uri)
 	} else if strings.HasPrefix(uri, fileserv.Root()) {
 		code = fileserv.Handler(writer, request, uri)
-	} else if strings.HasPrefix(uri, wserv.Root()) {
+	} else if strings.HasPrefix(uri, auth.Root()) {
+		code = auth.Handler(writer, request, uri)
+	} else if uri == wserv.URI() {
 		schema = "ws/s"
 		wserv.Handler(writer, request, uri)
 	} else {

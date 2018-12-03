@@ -1,9 +1,9 @@
 {
     "Listen": ":8192",
     "RealIP": "",
-    "Cors": false,
+    "Cors": true,
     "SSL": {
-        "Listen": ":8443",
+        "Listen": ":8193",
         "Crt": "conf/ssl/wormhole.crt",
         "Key": "conf/ssl/wormhole.key"
     }

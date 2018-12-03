@@ -9,7 +9,7 @@ import (
 )
 
 type config struct {
-	Root string
+	URI string
 }
 
 // Message 消息格式。
@@ -32,6 +32,6 @@ func init() {
 		return true
 	}
 
-	cfg.Root = util.FormatPath("/" + cfg.Root)
-	log.Printf("websocket config:root=%s\n", cfg.Root)
+	cfg.URI = util.FormatPath("/" + cfg.URI)
+	log.Printf("websocket config:root=%s\n", cfg.URI)
 }

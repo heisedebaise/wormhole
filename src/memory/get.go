@@ -10,3 +10,12 @@ func Get(unique string) []byte {
 
 	return nil
 }
+
+// GetString 获取缓存数据。
+func GetString(unique string) string {
+	if data := Get(unique); data != nil {
+		return string(data)
+	}
+
+	return ""
+}

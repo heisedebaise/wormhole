@@ -16,6 +16,11 @@ func Put(unique string, data []byte, deadline int64) {
 	rsync.SendBytes(rsync.MemoryFlag, unique, util.Merge(8+len(data), util.Int64ToBytes(deadline), data))
 }
 
+// PutString 放入缓存区。
+func PutString(unique string, data string, deadline int64) {
+	Put(unique, []byte(data), deadline)
+}
+
 func sync(unique string, message []byte) {
 	if len(message) == 8 {
 		updates[unique] = util.BytesToInt64(message[:8])

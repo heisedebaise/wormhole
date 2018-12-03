@@ -5,9 +5,9 @@ import (
 	"net/http"
 )
 
-// Root 获取URI前缀。
-func Root() string {
-	return cfg.Root
+// URI 获取URI。
+func URI() string {
+	return cfg.URI
 }
 
 // Handler 处理WS(S)请求。

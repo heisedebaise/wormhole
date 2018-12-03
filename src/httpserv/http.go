@@ -8,13 +8,13 @@ import (
 // HTTP 启动HTTP(S)服务。
 func HTTP(path string, handler func(writer http.ResponseWriter, request *http.Request)) {
 	http.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
-		if cfg.Cors {
+		if cfg.Cors && request.Method == "OPTIONS" {
 			writer.Header().Set("Access-Control-Allow-Origin", "*")
 			SendCode(writer, 204)
 
 			return
 		}
-		
+
 		handler(writer, request)
 	})
 
