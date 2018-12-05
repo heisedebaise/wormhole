@@ -12,8 +12,7 @@ type config struct {
 	URI string
 }
 
-// Message 消息格式。
-type Message struct {
+type message struct {
 	Auth      string
 	Operation string
 	Unique    string

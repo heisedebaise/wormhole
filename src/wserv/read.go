@@ -1,6 +1,7 @@
 package wserv
 
 import (
+	"auth"
 	"log"
 
 	"github.com/gorilla/websocket"
@@ -8,14 +9,20 @@ import (
 
 func read(conn *websocket.Conn) {
 	for {
-		message := Message{}
-		err := conn.ReadJSON(&message)
-		if err != nil {
+		msg := message{}
+		if err := conn.ReadJSON(&msg); err != nil {
 			log.Printf("read message from websocket failure %q\n", err)
 
 			break
 		}
-		log.Println(message)
-		conn.WriteJSON(message)
+
+		producer := auth.GetProducer(msg.Auth)
+		consumer := auth.GetConsumer(msg.Auth)
+		if producer == "" && consumer == "" {
+			break
+		}
+
+		register(conn, consumer)
+		produce(producer, msg)
 	}
 }

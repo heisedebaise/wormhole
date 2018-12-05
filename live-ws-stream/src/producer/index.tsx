@@ -32,12 +32,12 @@ export default class Producer extends React.Component {
             video.srcObject = stream;
             const mediaRecorder: MediaRecorder = new MediaRecorder(stream, {
                 mimeType: 'video/webm',
-                bitsPerSecond: 50 * 1024
+                bitsPerSecond: 1024
             });
             mediaRecorder.ondataavailable = (event: BlobEvent) => {
                 ws.send(event.data);
             };
-            mediaRecorder.start(1000);
+            mediaRecorder.start(5*1000);
         });
     }
 }

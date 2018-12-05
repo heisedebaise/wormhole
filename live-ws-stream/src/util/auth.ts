@@ -3,18 +3,14 @@ import http from './http';
 class Auth {
     public consumer(): string {
         const unique: string = 'live-ws-stream:consumer';
-        this.post('consumer', 'live-ws-stream', unique).then(data => {
-            console.log('consumer:' + data);
-        });
+        this.post('consumer', 'live-ws-stream', unique);
 
         return unique;
     }
 
     public producer(): string {
         const unique: string = 'live-ws-stream:producer';
-        this.post('producer', 'live-ws-stream', unique).then(data => {
-            console.log('producer:' + data);
-        });
+        this.post('producer', 'live-ws-stream', unique);
 
         return unique;
     }

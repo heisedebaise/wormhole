@@ -19,6 +19,5 @@ func Handler(writer http.ResponseWriter, request *http.Request, uri string) {
 		return
 	}
 
-	defer conn.Close()
 	read(conn)
 }
