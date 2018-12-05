@@ -17,6 +17,15 @@
 }
 ```
 
+## 注册消费者
+
+```json
+{
+    "auth": "认证Ticket",
+    "operation": "speech.consumer"
+}
+```
+
 ## 消费消息格式
 
 ```json

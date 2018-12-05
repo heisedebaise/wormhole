@@ -21,7 +21,7 @@ func speech(conn *websocket.Conn, msg message) {
 		return
 	}
 
-	if msg.Operation == "speech.register" {
+	if msg.Operation == "speech.consumer" {
 		register(conn, consumer)
 	} else if msg.Operation == "speech.produce" {
 		produce(producer, msg)
