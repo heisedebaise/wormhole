@@ -2,7 +2,6 @@ package auth
 
 import (
 	"httpserv"
-	"log"
 	"net/http"
 	"util"
 )
@@ -13,8 +12,8 @@ func Root() string {
 }
 
 type parameter struct {
-	Auth   string
-	Unique string
+	Token  string
+	Ticket string
 }
 
 // Handler 处理HTTP(S)请求。
@@ -28,19 +27,18 @@ func Handler(writer http.ResponseWriter, request *http.Request, uri string) int 
 		return httpserv.Send404(writer)
 	}
 
-	log.Println(json)
-	if json.Auth == "" {
+	if json.Token == "" {
 		return httpserv.Send404(writer)
 	}
 
-	if json.Unique == "" {
+	if json.Ticket == "" {
 		return httpserv.Send404(writer)
 	}
 
 	if uri == cfg.Root+"producer" {
-		producer(json.Auth, json.Unique)
+		producer(json.Token, json.Ticket)
 	} else if uri == cfg.Root+"consumer" {
-		consumer(json.Auth, json.Unique)
+		consumer(json.Token, json.Ticket)
 	} else {
 		return httpserv.Send404(writer)
 	}

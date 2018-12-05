@@ -1,7 +1,6 @@
 package wserv
 
 import (
-	"auth"
 	"log"
 
 	"github.com/gorilla/websocket"
@@ -16,13 +15,6 @@ func read(conn *websocket.Conn) {
 			break
 		}
 
-		producer := auth.GetProducer(msg.Auth)
-		consumer := auth.GetConsumer(msg.Auth)
-		if producer == "" && consumer == "" {
-			break
-		}
-
-		register(conn, consumer)
-		produce(producer, msg)
+		speech(conn, msg)
 	}
 }

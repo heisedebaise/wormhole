@@ -9,7 +9,7 @@ type config struct {
 	Root string
 }
 
-var cfg = config{"auth"}
+var cfg = config{"whauth"}
 
 func init() {
 	if err := util.LoadConfig(&cfg, "auth"); err != nil {
