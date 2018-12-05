@@ -4,7 +4,7 @@ Wormhole旨在构建一个快速响应的静态资源、反向代理等服务的
 
 [WebSocket](doc/websocket.md)
 
-[认证](doc/auth.md)
+[认证服务](doc/auth.md)
 
 [图片服务](doc/image.md)
 
