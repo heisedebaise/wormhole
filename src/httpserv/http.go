@@ -9,7 +9,8 @@ import (
 func HTTP(path string, handler func(writer http.ResponseWriter, request *http.Request)) {
 	http.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
 		if cfg.Cors {
-			writer.Header().Set("Access-Control-Allow-Origin", "*")
+			SetHeader(writer, "Access-Control-Allow-Origin", "*")
+			log.Printf("http cors: %s \n", request.URL.RequestURI())
 		}
 
 		handler(writer, request)

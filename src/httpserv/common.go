@@ -1,6 +1,7 @@
 package httpserv
 
 import (
+	"log"
 	"util"
 )
 
@@ -21,4 +22,6 @@ var cfg = config{":8192", "", false, ssl{":8193", "conf/ssl/wormhole.crt", "conf
 
 func init() {
 	util.LoadConfig(&cfg, "http")
+
+	log.Printf("http config: %+v\n", cfg)
 }
