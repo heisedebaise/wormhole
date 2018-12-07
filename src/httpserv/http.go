@@ -10,7 +10,6 @@ func HTTP(path string, handler func(writer http.ResponseWriter, request *http.Re
 	http.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
 		if cfg.Cors {
 			SetHeader(writer, "Access-Control-Allow-Origin", "*")
-			log.Printf("http cors: %s \n", request.URL.RequestURI())
 		}
 
 		handler(writer, request)

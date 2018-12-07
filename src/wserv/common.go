@@ -13,10 +13,10 @@ type config struct {
 }
 
 type message struct {
-	Auth      string
-	Operation string
-	Unique    string
-	Content   string
+	auth      string
+	operation string
+	unique    string
+	content   string
 }
 
 var cfg = config{"whws"}
