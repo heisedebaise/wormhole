@@ -49,7 +49,7 @@ func push(auth string, unique string, content string) {
 	msg.Unique = unique
 	msg.Operation = "speech.consume"
 	msg.Content = content
-	go func() {
+	// go func() {
 		for _, conn := range consumers[auth] {
 			if err := conn.WriteJSON(msg); err != nil {
 				// consumers[auth] = append(consumers[auth][:index], consumers[auth][index+1:])
@@ -57,5 +57,5 @@ func push(auth string, unique string, content string) {
 				log.Printf("send to websocket consumer failure %q !\n", err)
 			}
 		}
-	}()
+	// }()
 }
