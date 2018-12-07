@@ -49,11 +49,13 @@ func push(auth string, unique string, content string) {
 	msg.Unique = unique
 	msg.Operation = "speech.consume"
 	msg.Content = content
-	for _, conn := range consumers[auth] {
-		if err := conn.WriteJSON(msg); err != nil {
-			delete(consumers, auth)
-			conn.Close()
-			log.Printf("send to websocket consumer failure %q !\n", err)
+	go func() {
+		for _, conn := range consumers[auth] {
+			if err := conn.WriteJSON(msg); err != nil {
+				delete(consumers, auth)
+				conn.Close()
+				log.Printf("send to websocket consumer failure %q !\n", err)
+			}
 		}
-	}
+	}()
 }
