@@ -19,6 +19,7 @@ var signCfg []sign
 
 func init() {
 	LoadConfig(&signCfg, "sign")
+	log.Printf("sign: %+v\n", signCfg)
 }
 
 // CheckSign 校验签名。

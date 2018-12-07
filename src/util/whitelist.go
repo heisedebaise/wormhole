@@ -18,7 +18,7 @@ func init() {
 	LoadConfig(&whitelistCfg, "whitelist")
 	hasWhitelistIP = len(whitelistCfg.IP) > 0
 	hasWhitelistRegEx = len(whitelistCfg.RegEx) > 0
-	log.Printf("white list: %q\n", whitelistCfg)
+	log.Printf("white list: %+v\n", whitelistCfg)
 }
 
 // InWhiteList 校验是否存在于白名单内。
