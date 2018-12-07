@@ -16,6 +16,9 @@ import (
 )
 
 func read(writer http.ResponseWriter, request *http.Request, uri string) int {
+	if indexOf := strings.Index(uri, "?"); indexOf > -1 {
+		uri = uri[0:indexOf]
+	}
 	uri = uri[len(cfg.Root):]
 	path := absolute(uri)
 	info, err := os.Stat(path)
