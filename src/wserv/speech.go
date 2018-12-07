@@ -11,19 +11,19 @@ import (
 var consumers = make(map[string][]*websocket.Conn)
 
 func speech(conn *websocket.Conn, msg message) {
-	if !strings.HasPrefix(msg.operation, "speech.") {
+	if !strings.HasPrefix(msg.Operation, "speech.") {
 		return
 	}
 
-	producer := auth.GetProducer(msg.auth)
-	consumer := auth.GetConsumer(msg.auth)
+	producer := auth.GetProducer(msg.Auth)
+	consumer := auth.GetConsumer(msg.Auth)
 	if producer == "" && consumer == "" {
 		return
 	}
 
-	if msg.operation == "speech.consumer" {
+	if msg.Operation == "speech.consumer" {
 		register(conn, consumer)
-	} else if msg.operation == "speech.produce" {
+	} else if msg.Operation == "speech.produce" {
 		produce(producer, msg)
 	}
 }
@@ -45,14 +45,14 @@ func produce(producer string, msg message) {
 
 	log.Printf("produce:%s\n", producer)
 
-	push(producer, msg.unique, msg.content)
+	push(producer, msg.Unique, msg.Content)
 }
 
 func push(auth string, unique string, content string) {
 	msg := message{}
-	msg.unique = unique
-	msg.operation = "speech.consume"
-	msg.content = content
+	msg.Unique = unique
+	msg.Operation = "speech.consume"
+	msg.Content = content
 	go func() {
 		for _, conn := range consumers[auth] {
 			log.Printf("push:%s\n", auth)
