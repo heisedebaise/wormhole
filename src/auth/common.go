@@ -17,5 +17,5 @@ func init() {
 	}
 
 	cfg.Root = util.FormatPath("/" + cfg.Root + "/")
-	log.Printf("auth config:root=%s\n", cfg.Root)
+	log.Printf("auth config: %+v\n", cfg)
 }

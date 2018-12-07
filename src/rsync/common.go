@@ -28,7 +28,7 @@ func init() {
 		return
 	}
 
-	log.Printf("rsync config:listen=%s nodes=%q argot=%s re-connect=%d\n", cfg.Listen, cfg.Nodes, cfg.Argot, cfg.ReConnect)
+	log.Printf("rsync config: %+v\n", cfg)
 
 	id = uuid.New().String()
 	Storage(FileFlag, saveFile)

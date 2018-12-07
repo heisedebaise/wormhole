@@ -21,7 +21,7 @@ func init() {
 		return
 	}
 
-	log.Printf("memory config:deadline=%d\n", cfg.Deadline)
+	log.Printf("memory config: %+v\n", cfg)
 
 	rsync.Storage(rsync.MemoryFlag, sync)
 	go func() {

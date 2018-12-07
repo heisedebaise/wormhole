@@ -28,7 +28,7 @@ func init() {
 	cfg.Root = util.FormatPath("/" + cfg.Root + "/")
 	cfg.Save = util.FormatPath(cfg.Root + cfg.Save)
 	maxSize = util.ByteSize(cfg.MaxSize)
-	log.Printf("image config:root=%s;save=%s;absolute path=%s;max uploadable size=%d=%s\n", cfg.Root, cfg.Save, root, maxSize, cfg.MaxSize)
+	log.Printf("image config: %+v\n", cfg)
 }
 
 func absolute(uri string) string {

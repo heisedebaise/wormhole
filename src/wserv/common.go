@@ -32,5 +32,5 @@ func init() {
 	}
 
 	cfg.URI = util.FormatPath("/" + cfg.URI)
-	log.Printf("websocket config:root=%s\n", cfg.URI)
+	log.Printf("websocket config: %+v\n", cfg)
 }
