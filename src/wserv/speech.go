@@ -33,8 +33,6 @@ func register(conn *websocket.Conn, consumer string) {
 		return
 	}
 
-	log.Printf("register:%s\n", consumer)
-
 	consumers[consumer] = append(consumers[consumer], conn)
 }
 
@@ -42,8 +40,6 @@ func produce(producer string, msg message) {
 	if producer == "" {
 		return
 	}
-
-	log.Printf("produce:%s\n", producer)
 
 	push(producer, msg.Unique, msg.Content)
 }
@@ -55,9 +51,8 @@ func push(auth string, unique string, content string) {
 	msg.Content = content
 	go func() {
 		for _, conn := range consumers[auth] {
-			log.Printf("push:%s\n", auth)
 			if err := conn.WriteJSON(msg); err != nil {
-				delete(consumers, auth)
+				// consumers[auth] = append(consumers[auth][:index], consumers[auth][index+1:])
 				conn.Close()
 				log.Printf("send to websocket consumer failure %q !\n", err)
 			}
