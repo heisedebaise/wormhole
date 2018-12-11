@@ -7,6 +7,7 @@ WebSocket默认跟随HTTP启动，数据格式描述如下：
     "auth": "认证Ticket",
     "operation": "操作",
     "unique": "消息唯一值",
+    "type": "类型",
     "content": "消息内容"
 }
 ```

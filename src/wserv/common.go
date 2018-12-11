@@ -16,6 +16,7 @@ type message struct {
 	Auth      string `json:"auth"`
 	Operation string `json:"operation"`
 	Unique    string `json:"unique"`
+	Type      string `json:"type"`
 	Content   string `json:"content"`
 }
 

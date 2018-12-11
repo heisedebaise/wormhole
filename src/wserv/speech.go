@@ -33,29 +33,39 @@ func register(conn *websocket.Conn, consumer string) {
 		return
 	}
 
+	conn.SetCloseHandler(func(code int, text string) error {
+		log.Printf("web socket %d %s close.\n", code, text)
+
+		return nil
+	})
+
 	consumers[consumer] = append(consumers[consumer], conn)
 }
 
-func produce(producer string, msg message) {
-	if producer == "" {
+func produce(auth string, msg message) {
+	if auth == "" {
 		return
 	}
 
-	push(producer, msg.Unique, msg.Content)
+	push(auth, msg)
 }
 
-func push(auth string, unique string, content string) {
-	msg := message{}
-	msg.Unique = unique
-	msg.Operation = "speech.consume"
-	msg.Content = content
+func push(auth string, msg message) {
+	m := message{}
+	m.Operation = "speech.consume"
+	m.Unique = msg.Unique
+	m.Type = msg.Type
+	m.Content = msg.Content
 	// go func() {
-		for _, conn := range consumers[auth] {
-			if err := conn.WriteJSON(msg); err != nil {
-				// consumers[auth] = append(consumers[auth][:index], consumers[auth][index+1:])
-				conn.Close()
-				log.Printf("send to websocket consumer failure %q !\n", err)
-			}
+	for _, conn := range consumers[auth] {
+		if err := conn.WriteJSON(m); err != nil {
+			conn.Close()
+			log.Printf("send to websocket consumer failure %q !\n", err)
 		}
+	}
 	// }()
+}
+
+func write(msg message){
+	
 }

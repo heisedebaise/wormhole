@@ -13,10 +13,9 @@ class ProducerWs {
     public send(blob: Blob): void {
         const reader: FileReader = new FileReader();
         reader.onload = () => {
-            console.log(blob.size);
             this.ws.send(JSON.stringify({
                 auth: this.unique,
-                operation: 'produce',
+                operation: 'speech.produce',
                 unique: '' + new Date().getTime(),
                 content: reader.result
             }));
@@ -26,6 +25,10 @@ class ProducerWs {
 
     public receive(event: MessageEvent): void {
         console.log(event.data);
+    }
+
+    public close(): void {
+        this.ws.close();
     }
 }
 

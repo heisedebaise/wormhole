@@ -12,6 +12,8 @@ Wormhole旨在构建一个快速响应的静态资源、反向代理等服务的
 
 [演示服务](doc/speech.md)
 
+[清理过期文件](doc/clear.md)
+
 ## docker
 
 [构建](https://github.com/heisedebaise/docker/tree/master/wormhole:latest)

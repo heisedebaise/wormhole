@@ -6,13 +6,14 @@
 
 需要先添加[认证](auth.md)后才能使用。
 
-## 生产消息格式
+## 生产
 
 ```json
 {
     "auth": "认证Ticket",
     "operation": "speech.produce",
     "unique": "消息唯一值",
+    "type": "类型",
     "content": "消息内容"
 }
 ```
@@ -26,12 +27,15 @@
 }
 ```
 
-## 消费消息格式
+## 消费
 
 ```json
 {
     "operation": "speech.consume",
     "unique": "消息唯一值",
+    "type": "类型",
     "content": "消息内容"
 }
 ```
+
+## 

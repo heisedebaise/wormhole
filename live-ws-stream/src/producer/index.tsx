@@ -15,6 +15,7 @@ export default class Producer extends React.Component {
                 <video autoPlay={true} playsInline={true} />
                 <br />
                 <button onClick={this.start}>Start</button>
+                <button onClick={this.close}>Close</button>
             </div>
         );
     }
@@ -37,7 +38,11 @@ export default class Producer extends React.Component {
             mediaRecorder.ondataavailable = (event: BlobEvent) => {
                 ws.send(event.data);
             };
-            mediaRecorder.start(5*1000);
+            mediaRecorder.start(100);
         });
+    }
+
+    private close(): void {
+        ws.close();
     }
 }

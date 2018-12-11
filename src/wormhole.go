@@ -27,6 +27,7 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 	} else if uri == wserv.URI() {
 		schema = "ws/s"
 		wserv.Handler(writer, request, uri)
+		code = 200
 	} else {
 		code = httpserv.Send404(writer)
 	}

@@ -12,21 +12,25 @@ class ProducerWs {
 
     public auth(): void {
         this.ws.send(JSON.stringify({
-            auth: this.unique
+            auth: this.unique,
+            operation: 'speech.consumer'
         }));
     }
 
     public receive(event: MessageEvent): void {
-        // const video: HTMLVideoElement | null = document.querySelector('#consumer video');
-        const source: HTMLSourceElement | null = document.querySelector('#consumer video source');
-        if (source === null) {
+        const video: HTMLVideoElement | null = document.querySelector('#consumer video');
+        if (video === null) {
             return;
         }
 
-        const data = JSON.parse(event.data);
-        console.log(data.Content);
-        source.src = data.Content;
-        // video.play();
+        video.src=JSON.parse(event.data).content;
+
+        // const source: HTMLSourceElement = document.createElement('source');
+        // source.type = 'video/webm';
+        // source.src = JSON.parse(event.data).content;
+        // video.appendChild(source);
+        video.load();
+        video.play();
     }
 }
 
