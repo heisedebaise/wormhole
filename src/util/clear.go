@@ -22,10 +22,11 @@ func init() {
 		clears[i] = c
 	}
 	log.Printf("clear : %+v\n", clears)
-	scan()
+
+	autoClear()
 }
 
-func scan() {
+func autoClear() {
 	go func() {
 		for {
 			for _, c := range clears {
@@ -39,24 +40,27 @@ func scan() {
 }
 
 func scanToClear(c clear, path string, timeout int64) {
-	if files, err := ioutil.ReadDir(path); err == nil {
-		if len(files) == 0 {
-			os.Remove(path)
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return
+	}
 
-			return
+	if len(files) == 0 {
+		os.Remove(path)
+
+		return
+	}
+
+	for _, file := range files {
+		p := path + string(os.PathSeparator) + file.Name()
+		if file.IsDir() {
+			scanToClear(c, p, timeout)
+
+			continue
 		}
 
-		for _, file := range files {
-			p := path + string(os.PathSeparator) + file.Name()
-			if file.IsDir() {
-				scanToClear(c, p, timeout)
-
-				continue
-			}
-
-			if file.ModTime().Unix() < timeout {
-				os.Remove(p)
-			}
+		if file.ModTime().Unix() < timeout {
+			os.Remove(p)
 		}
 	}
 }
