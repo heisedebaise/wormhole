@@ -1,4 +1,4 @@
 [{
-    "Path":"logs",
-    "Timeout":"7d"
+    "Path": "logs",
+    "Timeout": "7d"
 }]
