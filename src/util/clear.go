@@ -18,8 +18,7 @@ var clears []clear
 func init() {
 	LoadConfig(&clears, "clear")
 	for i, c := range clears {
-		c.nTimeout = int64(ParseTime(c.Timeout))
-		clears[i] = c
+		clears[i].nTimeout = int64(ParseTime(c.Timeout))
 	}
 	log.Printf("clear : %+v\n", clears)
 
