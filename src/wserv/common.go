@@ -12,7 +12,8 @@ type config struct {
 	URI string
 }
 
-type message struct {
+// Message 消息。
+type Message struct {
 	Auth      string `json:"auth"`
 	Operation string `json:"operation"`
 	Unique    string `json:"unique"`

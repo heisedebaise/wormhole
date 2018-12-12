@@ -17,6 +17,7 @@ class ProducerWs {
                 auth: this.unique,
                 operation: 'speech.produce',
                 unique: '' + new Date().getTime(),
+                type: 'video',
                 content: reader.result
             }));
         };

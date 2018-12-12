@@ -6,18 +6,12 @@ import (
 	"util"
 )
 
-// Root 获取URI前缀。
-func Root() string {
-	return cfg.Root
-}
-
 type parameter struct {
 	Token  string
 	Ticket string
 }
 
-// Handler 处理HTTP(S)请求。
-func Handler(writer http.ResponseWriter, request *http.Request, uri string) int {
+func handle(writer http.ResponseWriter, request *http.Request, uri string) int {
 	if !util.InWhiteList(httpserv.GetIP(request)) && !util.CheckSign(request.Form) {
 		return httpserv.Send404(writer)
 	}
@@ -46,4 +40,9 @@ func Handler(writer http.ResponseWriter, request *http.Request, uri string) int 
 	writer.Write([]byte("success"))
 
 	return 200
+}
+
+// Serve 服务。
+func Serve() {
+	httpserv.Handler(cfg.Root, handle)
 }
