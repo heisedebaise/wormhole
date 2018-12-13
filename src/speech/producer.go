@@ -7,8 +7,6 @@ import (
 	"os"
 	"time"
 	"wserv"
-
-	"github.com/gorilla/websocket"
 )
 
 func produce(auth string, message wserv.Message) {
@@ -30,11 +28,7 @@ func produce(auth string, message wserv.Message) {
 
 func push(auth string, data []byte) {
 	for _, conn := range consumers[auth] {
-		go func(conn *websocket.Conn, data []byte) {
-			consumerChans[conn] <- 0
-			conn.WriteMessage(websocket.TextMessage, data)
-			<-consumerChans[conn]
-		}(conn, data)
+		consume(conn, data)
 	}
 }
 

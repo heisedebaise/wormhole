@@ -34,6 +34,7 @@ func pull(auth string, message wserv.Message, conn *websocket.Conn) {
 	}
 	path := getPath(auth, message)
 	if files, err := ioutil.ReadDir(path); err == nil {
+		consumerChans[conn] <- 0
 		for _, file := range files {
 			name := file.Name()
 			if file.IsDir() || (start != "" && start > name) || (end != "" && end < name) {
@@ -44,5 +45,14 @@ func pull(auth string, message wserv.Message, conn *websocket.Conn) {
 				conn.WriteMessage(websocket.TextMessage, data)
 			}
 		}
+		<-consumerChans[conn]
 	}
+}
+
+func consume(conn *websocket.Conn, data []byte) {
+	go func(conn *websocket.Conn, data []byte) {
+		consumerChans[conn] <- 0
+		conn.WriteMessage(websocket.TextMessage, data)
+		<-consumerChans[conn]
+	}(conn, data)
 }

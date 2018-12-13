@@ -2,12 +2,27 @@ package speech
 
 import (
 	"auth"
+	"httpserv"
+	"net/http"
+	"util"
 	"wserv"
 
 	"github.com/gorilla/websocket"
 )
 
-func handle(conn *websocket.Conn, message wserv.Message) {
+func h(writer http.ResponseWriter, request *http.Request, uri string) int {
+	if !util.InWhiteList(httpserv.GetIP(request)) && !util.CheckSign(request.Form) {
+		return httpserv.Send404(writer)
+	}
+
+	if uri == "/whspeech/finish-time" {
+		return finishTime(writer, request)
+	}
+
+	return httpserv.Send404(writer)
+}
+
+func ws(conn *websocket.Conn, message wserv.Message) {
 	producer := auth.GetProducer(message.Auth)
 	consumer := auth.GetConsumer(message.Auth)
 	if producer == "" && consumer == "" {
@@ -27,6 +42,7 @@ func handle(conn *websocket.Conn, message wserv.Message) {
 
 // Serve 服务。
 func Serve() {
-	wserv.Handler("speech.", handle)
-	auto()
+	httpserv.Handler("/whspeech/", h)
+	wserv.Handler("speech.", ws)
+	scan()
 }
