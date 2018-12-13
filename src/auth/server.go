@@ -6,33 +6,26 @@ import (
 	"util"
 )
 
-type parameter struct {
-	Token  string
-	Ticket string
-}
-
 func handle(writer http.ResponseWriter, request *http.Request, uri string) int {
+	request.ParseForm()
 	if !util.InWhiteList(httpserv.GetIP(request)) && !util.CheckSign(request.Form) {
 		return httpserv.Send404(writer)
 	}
 
-	var json = parameter{}
-	if httpserv.GetJSON(request, &json) != nil {
+	token := httpserv.GetParam(request, "token", "")
+	if token == "" {
 		return httpserv.Send404(writer)
 	}
 
-	if json.Token == "" {
-		return httpserv.Send404(writer)
-	}
-
-	if json.Ticket == "" {
+	ticket := httpserv.GetParam(request, "ticket", "")
+	if ticket == "" {
 		return httpserv.Send404(writer)
 	}
 
 	if uri == cfg.Root+"producer" {
-		producer(json.Token, json.Ticket)
+		producer(token, ticket)
 	} else if uri == cfg.Root+"consumer" {
-		consumer(json.Token, json.Ticket)
+		consumer(token, ticket)
 	} else {
 		return httpserv.Send404(writer)
 	}

@@ -28,11 +28,11 @@ func pull(auth string, message wserv.Message, conn *websocket.Conn) {
 	var start string
 	var end string
 	indexOf := strings.Index(message.Unique, ":")
-	if indexOf == -1 {
+	if indexOf > -1 {
 		start = message.Unique[:indexOf]
 		end = message.Unique[indexOf+1:]
 	}
-	path := getPath(auth, message)
+	path := getPath(auth, message.Type)
 	if files, err := ioutil.ReadDir(path); err == nil {
 		consumerChans[conn] <- 0
 		for _, file := range files {

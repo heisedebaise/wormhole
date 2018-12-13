@@ -33,7 +33,7 @@ func push(auth string, data []byte) {
 }
 
 func write(auth string, message wserv.Message, data []byte) {
-	path := getPath(auth, message)
+	path := getPath(auth, message.Type)
 	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		log.Println(err)
 
@@ -41,4 +41,8 @@ func write(auth string, message wserv.Message, data []byte) {
 	}
 
 	ioutil.WriteFile(path+message.Unique, data, 0644)
+	if file, err := os.OpenFile(getPath(auth, "")+"uniques", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644); err == nil {
+		defer file.Close()
+		file.WriteString(message.Type + ":" + message.Unique + "\n")
+	}
 }

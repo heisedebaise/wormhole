@@ -15,11 +15,16 @@ export default class Consumer extends React.Component {
                 <video autoPlay={true} />
                 <br />
                 <button onClick={this.start}>Start</button>
+                <button onClick={this.pull}>Pull</button>
             </div>
         );
     }
 
     private start(): void {
         ws.auth();
+    }
+
+    private pull(): void {
+        ws.pull();
     }
 }

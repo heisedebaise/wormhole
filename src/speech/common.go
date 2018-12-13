@@ -3,7 +3,6 @@ package speech
 import (
 	"log"
 	"util"
-	"wserv"
 )
 
 type config struct {
@@ -21,12 +20,10 @@ func init() {
 	log.Printf("speech config: %+v\n", cfg)
 }
 
-func getPath(auth string, message wserv.Message) string {
+func getPath(auth string, t string) string {
 	path := "speech/" + auth + "/"
-	if message.Type == "" {
-		path += "type/"
-	} else {
-		path += message.Type + "/"
+	if t != "" {
+		path += t + "/"
 	}
 
 	return path

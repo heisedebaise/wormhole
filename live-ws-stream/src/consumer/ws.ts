@@ -17,13 +17,21 @@ class ProducerWs {
         }));
     }
 
+    public pull(): void {
+        this.ws.send(JSON.stringify({
+            auth: this.unique,
+            operation: 'speech.pull',
+            type: 'video'
+        }));
+    }
+
     public receive(event: MessageEvent): void {
         const video: HTMLVideoElement | null = document.querySelector('#consumer video');
         if (video === null) {
             return;
         }
 
-        video.src=JSON.parse(event.data).content;
+        video.src = JSON.parse(event.data).content;
 
         // const source: HTMLSourceElement = document.createElement('source');
         // source.type = 'video/webm';

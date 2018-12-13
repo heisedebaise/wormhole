@@ -15,10 +15,10 @@ class Auth {
         return unique;
     }
 
-    private post(name: string, auth: string, unique: string): Promise<any> {
+    private post(name: string, token: string, ticket: string): Promise<any> {
         return http.post('/whauth/' + name, {
-            token: auth,
-            ticket: unique
+            token: token,
+            ticket: ticket
         });
     }
 }
