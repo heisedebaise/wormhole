@@ -61,6 +61,46 @@
 
 > 如果未推送结束消息，则默认`8h`未收到推送消息后自动结束。
 
+## 概要
+
+HTTP POST: /whspeech/outline
+
+参数
+
+|名称|类型|必须|说明|
+|---|---|---|---|
+|auth|string|是|演示ID。|
+
+返回值
+
+```json
+{
+    "create": "创建时间戳，单位：秒",
+    "modify": "更新时间戳，单位：秒",
+    "unique": "最后unique值。"
+}
+```
+
+> 未结束演示时每分钟更新一次。
+
+## Unique集
+
+HTTP POST: /whspeech/uniques
+
+参数
+
+|名称|类型|必须|说明|
+|---|---|---|---|
+|auth|string|是|演示ID。|
+
+返回值
+
+```string
+type:unique
+```
+
+> 每行一对`type:unique`数据。
+
 ## 配置文件
 
 [speech.json](../conf/speech.json)
