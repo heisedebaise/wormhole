@@ -21,6 +21,8 @@ func h(writer http.ResponseWriter, request *http.Request, uri string) int {
 		return outline(writer, request)
 	case "/whspeech/uniques":
 		return uniques(writer, request)
+	case "/whspeech/track":
+		return track(writer, request)
 	default:
 		return httpserv.Send404(writer)
 	}

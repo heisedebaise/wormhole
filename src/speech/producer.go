@@ -2,10 +2,8 @@ package speech
 
 import (
 	"encoding/json"
-	"httpserv"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"wserv"
 )
@@ -45,13 +43,4 @@ func write(auth string, message wserv.Message, data []byte) {
 		defer file.Close()
 		file.WriteString(message.Type + ":" + message.Unique + "\n")
 	}
-}
-
-func uniques(writer http.ResponseWriter, request *http.Request) int {
-	auth := httpserv.GetParam(request, "auth", "")
-	if auth == "" {
-		return httpserv.Send404(writer)
-	}
-
-	return httpserv.ServeFile(writer, request, nil, getUniques(auth))
 }

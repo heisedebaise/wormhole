@@ -77,7 +77,11 @@ HTTP POST: /whspeech/outline
 {
     "create": "创建时间戳，单位：秒",
     "modify": "更新时间戳，单位：秒",
-    "unique": "最后unique值。"
+    "unique": "最后unique值。",
+    "types": [{
+        "name": "类型",
+        "count": "数量"
+    }]
 }
 ```
 
@@ -100,6 +104,25 @@ type:unique
 ```
 
 > 每行一对`type:unique`数据。
+
+## 轨迹
+
+HTTP POST: /whspeech/track
+
+参数
+
+|名称|类型|必须|说明|
+|---|---|---|---|
+|ticket|string|是|认证Ticket。|
+|type|string|否|消息type值。|
+|start|string|否|开始unique，为空则不限制。|
+|end|string|否|结束unique，为空则不限制。|
+
+返回值
+
+```string
+type:unique
+```
 
 ## 配置文件
 

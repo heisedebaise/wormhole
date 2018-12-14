@@ -1,19 +1,24 @@
 package speech
 
 import (
+	"bufio"
 	"encoding/json"
-	"httpserv"
 	"io/ioutil"
-	"net/http"
+	"os"
 	"strings"
 	"time"
-	"util"
 )
 
-type info struct {
-	Create int64  `json:"create"`
-	Modify int64  `json:"modify"`
-	Unique string `json:"unique"`
+type outlineStruct struct {
+	Create int64        `json:"create"`
+	Modify int64        `json:"modify"`
+	Unique string       `json:"unique"`
+	Types  []typeStruct `json:"types"`
+}
+
+type typeStruct struct {
+	Name  string `json:"name"`
+	Count int    `json:"count"`
 }
 
 func scan() {
@@ -46,35 +51,30 @@ func finish(auth string) {
 }
 
 func setOutline(auth string) {
-	if data, err := json.Marshal(info{createTime(auth), modifyTime(auth), tail(auth)}); err == nil {
+	file, err := os.Open(getUniques(auth))
+	if err != nil {
+		return
+	}
+
+	types := make(map[string]int)
+	var unique string
+	scanner := bufio.NewScanner(bufio.NewReader(file))
+	for scanner.Scan() {
+		line := scanner.Text()
+		indexOf := strings.Index(line, ":")
+		if indexOf == -1 {
+			continue
+		}
+
+		types[line[:indexOf]]++
+		unique = line[indexOf+1:]
+	}
+	var ts []typeStruct
+	for name, count := range types {
+		ts = append(ts, typeStruct{name, count})
+	}
+
+	if data, err := json.Marshal(outlineStruct{createTime(auth), modifyTime(auth), unique, ts}); err == nil {
 		ioutil.WriteFile(getOutline(auth), data, 0644)
 	}
-}
-
-func tail(auth string) string {
-	if data, err := util.Tail(getUniques(auth), 256); err == nil {
-		str := string(data)
-		start := strings.LastIndex(str, ":")
-		if start == -1 {
-			return ""
-		}
-
-		end := strings.LastIndex(str, "\n")
-		if end == -1 {
-			end = len(str)
-		}
-
-		return str[start+1 : end]
-	}
-
-	return ""
-}
-
-func outline(writer http.ResponseWriter, request *http.Request) int {
-	auth := httpserv.GetParam(request, "auth", "")
-	if auth == "" {
-		return httpserv.Send404(writer)
-	}
-
-	return httpserv.ServeFile(writer, request, nil, getOutline(auth))
 }

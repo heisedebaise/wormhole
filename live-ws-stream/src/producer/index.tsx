@@ -38,11 +38,6 @@ export default class Producer extends React.Component {
             });
             mediaRecorder.ondataavailable = (event: BlobEvent) => {
                 ws.send(event.data);
-                http.post('/whspeech/outline', {
-                    auth: 'live-ws-stream'
-                }).then(data => {
-                    console.log(data);
-                })
             };
             mediaRecorder.start(100);
         });
