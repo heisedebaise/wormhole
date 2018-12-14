@@ -46,13 +46,16 @@ func handle(writer http.ResponseWriter, request *http.Request) {
 		SetHeader(writer, "Access-Control-Allow-Origin", "*")
 	}
 	uri := request.RequestURI
-	var code int
+	code := -1
 	for root, handler := range handlers {
 		if strings.HasPrefix(uri, root) {
 			code = handler(writer, request, uri)
 
 			break
 		}
+	}
+	if code == -1 {
+		code = Send404(writer)
 	}
 	log.Printf("%d: uri=%s;remote=%s;time=%fms\n", code, uri, GetIP(request), float64((time.Now().UnixNano()-now))/1000000)
 }

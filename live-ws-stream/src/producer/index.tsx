@@ -1,4 +1,5 @@
 import * as React from 'react';
+import http from '../util/http';
 import ws from './ws';
 import './index.css';
 
@@ -37,6 +38,11 @@ export default class Producer extends React.Component {
             });
             mediaRecorder.ondataavailable = (event: BlobEvent) => {
                 ws.send(event.data);
+                http.post('/whspeech/times', {
+                    auth: 'live-ws-stream'
+                }).then(data => {
+                    console.log(data);
+                })
             };
             mediaRecorder.start(100);
         });

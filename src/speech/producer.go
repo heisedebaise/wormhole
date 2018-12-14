@@ -2,10 +2,11 @@ package speech
 
 import (
 	"encoding/json"
+	"httpserv"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
-	"time"
 	"wserv"
 )
 
@@ -23,7 +24,6 @@ func produce(auth string, message wserv.Message) {
 
 	push(auth, data)
 	write(auth, message, data)
-	produceTimes[auth] = time.Now().Unix()
 }
 
 func push(auth string, data []byte) {
@@ -41,8 +41,17 @@ func write(auth string, message wserv.Message, data []byte) {
 	}
 
 	ioutil.WriteFile(path+message.Unique, data, 0644)
-	if file, err := os.OpenFile(getPath(auth, "")+"uniques", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644); err == nil {
+	if file, err := os.OpenFile(getUniques(auth), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644); err == nil {
 		defer file.Close()
 		file.WriteString(message.Type + ":" + message.Unique + "\n")
 	}
+}
+
+func uniques(writer http.ResponseWriter, request *http.Request) int {
+	auth := httpserv.GetParam(request, "auth", "")
+	if auth == "" {
+		return httpserv.Send404(writer)
+	}
+
+	return httpserv.ServeFile(writer, request, nil, getUniques(auth))
 }

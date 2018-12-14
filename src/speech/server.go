@@ -11,15 +11,19 @@ import (
 )
 
 func h(writer http.ResponseWriter, request *http.Request, uri string) int {
+	request.ParseForm()
 	if !util.InWhiteList(httpserv.GetIP(request)) && !util.CheckSign(request.Form) {
 		return httpserv.Send404(writer)
 	}
 
-	if uri == "/whspeech/finish-time" {
-		return finishTime(writer, request)
+	switch uri {
+	case "/whspeech/outline":
+		return outline(writer, request)
+	case "/whspeech/uniques":
+		return uniques(writer, request)
+	default:
+		return httpserv.Send404(writer)
 	}
-
-	return httpserv.Send404(writer)
 }
 
 func ws(conn *websocket.Conn, message wserv.Message) {

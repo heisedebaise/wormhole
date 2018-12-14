@@ -26,6 +26,31 @@ func ExistsFile(path string) bool {
 	return err == nil && !info.IsDir()
 }
 
+// Tail 获取文件末尾数据。
+func Tail(path string, size int64) ([]byte, error) {
+	info, err := os.Stat(path)
+	if err != nil {
+		return nil, err
+	}
+
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	data := make([]byte, size)
+	start := info.Size() - size
+	if start < 0 {
+		start = 0
+	}
+	if _, err := file.ReadAt(data, start); err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
 // ByteSize 转换文件大小。
 func ByteSize(size string) int64 {
 	length := len(size)
