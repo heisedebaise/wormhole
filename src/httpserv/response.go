@@ -13,13 +13,14 @@ type Failure struct {
 
 // SendFailure 发送失败信息。
 func SendFailure(writer http.ResponseWriter, failure Failure) int {
-	if data, err := json.Marshal(failure); err == nil {
+	data, err := json.Marshal(failure)
+	if err == nil {
 		writer.Write(data)
-
-		return Send200(writer)
+	} else {
+		writer.Write([]byte(err.Error()))
 	}
 
-	return Send404(writer)
+	return Send200(writer)
 }
 
 // Send200 发送200。
