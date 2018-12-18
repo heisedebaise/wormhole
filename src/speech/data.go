@@ -5,6 +5,8 @@ import (
 	"httpserv"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"strings"
 )
 
 func save(writer http.ResponseWriter, request *http.Request) int {
@@ -22,7 +24,9 @@ func save(writer http.ResponseWriter, request *http.Request) int {
 		return httpserv.SendFailure(writer, httpserv.Failure{Code: 2102, Message: "Data不允许为空！"})
 	}
 
-	ioutil.WriteFile(getData(id), []byte(data), 0644)
+	path := getData(id)
+	os.MkdirAll(path[strings.LastIndex(path, "/"):], os.ModePerm)
+	ioutil.WriteFile(path, []byte(data), 0644)
 	httpserv.SendSuccess(writer, nil)
 
 	return 200
