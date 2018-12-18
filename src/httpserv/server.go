@@ -44,13 +44,16 @@ func handle(writer http.ResponseWriter, request *http.Request) {
 	now := time.Now().UnixNano()
 	if cfg.Cors {
 		SetHeader(writer, "Access-Control-Allow-Origin", "*")
+		SetHeader(writer, "Access-Control-Allow-Methods", "*")
+		SetHeader(writer, "Access-Control-Allow-Headers", "*")
+		SetHeader(writer, "Access-Control-Allow-Credentials", "true")
 	}
 	if request.Method == "OPTIONS" {
 		SendCode(writer, 204)
 
 		return
 	}
-	
+
 	uri := request.RequestURI
 	code := -1
 	for root, handler := range handlers {
