@@ -65,6 +65,8 @@ func handle(writer http.ResponseWriter, request *http.Request) {
 	}
 	if code == -1 {
 		code = Send404(writer)
+	} else if code == 200 {
+		Send200(writer)
 	}
 	log.Printf("%d: uri=%s;remote=%s;time=%fms\n", code, uri, GetIP(request), float64((time.Now().UnixNano()-now))/1000000)
 }

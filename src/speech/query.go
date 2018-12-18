@@ -11,7 +11,7 @@ import (
 func outline(writer http.ResponseWriter, request *http.Request) int {
 	auth := httpserv.GetParam(request, "auth", "")
 	if auth == "" {
-		return httpserv.Send404(writer)
+		return httpserv.SendFailure(writer, httpserv.Failure{Code: 2105, Message: "Auth不允许为空！"})
 	}
 
 	return httpserv.ServeFile(writer, request, nil, getOutline(auth))
@@ -20,7 +20,7 @@ func outline(writer http.ResponseWriter, request *http.Request) int {
 func uniques(writer http.ResponseWriter, request *http.Request) int {
 	auth := httpserv.GetParam(request, "auth", "")
 	if auth == "" {
-		return httpserv.Send404(writer)
+		return httpserv.SendFailure(writer, httpserv.Failure{Code: 2105, Message: "Auth不允许为空！"})
 	}
 
 	return httpserv.ServeFile(writer, request, nil, getUniques(auth))
@@ -29,12 +29,12 @@ func uniques(writer http.ResponseWriter, request *http.Request) int {
 func track(writer http.ResponseWriter, request *http.Request) int {
 	ticket := httpserv.GetParam(request, "ticket", "")
 	if ticket == "" {
-		return httpserv.Send404(writer)
+		return httpserv.SendFailure(writer, httpserv.Failure{Code: 2103, Message: "Ticket不允许为空！"})
 	}
 
 	consumer := auth.GetConsumer(ticket)
 	if consumer == "" {
-		return httpserv.Send404(writer)
+		return httpserv.SendFailure(writer, httpserv.Failure{Code: 2104, Message: "Ticket[" + ticket + "]认证失败！"})
 	}
 
 	path := getPath(consumer, httpserv.GetParam(request, "type", ""))

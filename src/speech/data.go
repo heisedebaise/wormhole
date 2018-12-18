@@ -5,18 +5,21 @@ import (
 	"httpserv"
 	"io/ioutil"
 	"net/http"
-	"util"
 )
 
 func save(writer http.ResponseWriter, request *http.Request) int {
-	if !util.InWhiteList(httpserv.GetIP(request)) && !util.CheckSign(request.Form) {
-		return httpserv.Send404(writer)
+	if code := httpserv.Auth(writer, request); code > 0 {
+		return code
 	}
 
 	id := httpserv.GetParam(request, "id", "")
+	if id == "" {
+		return httpserv.SendFailure(writer, httpserv.Failure{Code: 2101, Message: "ID不允许为空！"})
+	}
+
 	data := httpserv.GetParam(request, "data", "")
 	if id == "" || data == "" {
-		return httpserv.Send404(writer)
+		return httpserv.SendFailure(writer, httpserv.Failure{Code: 2102, Message: "Data不允许为空！"})
 	}
 
 	ioutil.WriteFile(getData(id), []byte(data), 0644)
@@ -28,7 +31,7 @@ func save(writer http.ResponseWriter, request *http.Request) int {
 func data(writer http.ResponseWriter, request *http.Request) int {
 	ticket := httpserv.GetParam(request, "ticket", "")
 	if ticket == "" {
-		return httpserv.Send404(writer)
+		return httpserv.SendFailure(writer, httpserv.Failure{Code: 2103, Message: "Ticket不允许为空！"})
 	}
 
 	token := auth.GetProducer(ticket)
@@ -36,7 +39,7 @@ func data(writer http.ResponseWriter, request *http.Request) int {
 		token = auth.GetConsumer(ticket)
 	}
 	if token == "" {
-		return httpserv.Send404(writer)
+		return httpserv.SendFailure(writer, httpserv.Failure{Code: 2104, Message: "Ticket[" + ticket + "]认证失败！"})
 	}
 
 	return httpserv.ServeFile(writer, request, nil, getData(token))
