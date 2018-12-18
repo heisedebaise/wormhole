@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 	"time"
@@ -29,12 +28,10 @@ func scan() {
 			time.Sleep(time.Minute)
 			timeout := time.Now().Unix() - cfg.nTimeout
 			overdue := timeout - (cfg.nTimeout >> 3)
-			log.Println("###############")
 			if infos, err := ioutil.ReadDir(root); err == nil {
 				for _, info := range infos {
 					auth := info.Name()
 					time := modifyTime(auth)
-					log.Println(auth, time, timeout, overdue)
 					if time > timeout {
 						setOutline(auth, false)
 					} else if time > overdue {
@@ -56,7 +53,6 @@ func finish(auth string) {
 
 func setOutline(auth string, finish bool) {
 	file, err := os.Open(getUniques(auth))
-	log.Println("11:", auth, file, err, finish)
 	if err != nil {
 		return
 	}
@@ -80,8 +76,6 @@ func setOutline(auth string, finish bool) {
 	}
 
 	if data, err := json.Marshal(outlineStruct{Create: createTime(auth), Modify: modifyTime(auth), Unique: unique, Types: ts, Finish: finish}); err == nil {
-		log.Println("22:", data)
 		ioutil.WriteFile(getOutline(auth), data, 0644)
 	}
-	log.Println("33:", auth, file, err, finish)
 }
