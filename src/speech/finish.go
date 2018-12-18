@@ -28,7 +28,7 @@ func scan() {
 		for {
 			time.Sleep(time.Minute)
 			timeout := time.Now().Unix() - cfg.nTimeout
-			overdue := timeout - cfg.nTimeout
+			overdue := timeout - (cfg.nTimeout >> 3)
 			log.Println("###############")
 			if infos, err := ioutil.ReadDir(root); err == nil {
 				for _, info := range infos {
