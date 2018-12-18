@@ -29,7 +29,7 @@ func handle(writer http.ResponseWriter, request *http.Request, uri string) int {
 		return httpserv.Send404(writer)
 	}
 
-	writer.Write([]byte("success"))
+	writer.Write([]byte("{code:0}"))
 
 	return 200
 }
