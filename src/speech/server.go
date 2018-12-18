@@ -4,7 +4,6 @@ import (
 	"auth"
 	"httpserv"
 	"net/http"
-	"util"
 	"wserv"
 
 	"github.com/gorilla/websocket"
@@ -12,10 +11,6 @@ import (
 
 func h(writer http.ResponseWriter, request *http.Request, uri string) int {
 	request.ParseForm()
-	if !util.InWhiteList(httpserv.GetIP(request)) && !util.CheckSign(request.Form) {
-		return httpserv.Send404(writer)
-	}
-
 	switch uri {
 	case "/whspeech/save":
 		return save(writer, request)
