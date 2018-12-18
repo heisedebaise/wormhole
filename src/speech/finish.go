@@ -29,10 +29,12 @@ func scan() {
 			time.Sleep(time.Minute)
 			timeout := time.Now().Unix() - cfg.nTimeout
 			overdue := timeout - cfg.nTimeout
+			log.Println("###############")
 			if infos, err := ioutil.ReadDir(root); err == nil {
 				for _, info := range infos {
 					auth := info.Name()
 					time := modifyTime(auth)
+					log.Println(auth, time)
 					if time > timeout {
 						setOutline(auth, false)
 					} else if time > overdue {
