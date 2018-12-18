@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -53,6 +54,7 @@ func finish(auth string) {
 
 func setOutline(auth string, finish bool) {
 	file, err := os.Open(getUniques(auth))
+	log.Println("11:", auth, file, err, finish)
 	if err != nil {
 		return
 	}
@@ -75,7 +77,9 @@ func setOutline(auth string, finish bool) {
 		ts = append(ts, typeStruct{name, count})
 	}
 
-	if data, err := json.Marshal(outlineStruct{createTime(auth), modifyTime(auth), unique, ts, finish}); err == nil {
+	if data, err := json.Marshal(outlineStruct{Create: createTime(auth), Modify: modifyTime(auth), Unique: unique, Types: ts, Finish: finish}); err == nil {
+		log.Println("22:", data)
 		ioutil.WriteFile(getOutline(auth), data, 0644)
 	}
+	log.Println("33:", auth, file, err, finish)
 }
