@@ -25,7 +25,7 @@ func save(writer http.ResponseWriter, request *http.Request) int {
 	}
 
 	path := getData(id)
-	os.MkdirAll(path[strings.LastIndex(path, "/"):], os.ModePerm)
+	os.MkdirAll(path[:strings.LastIndex(path, "/")], os.ModePerm)
 	ioutil.WriteFile(path, []byte(data), 0644)
 	httpserv.SendSuccess(writer, nil)
 
