@@ -17,6 +17,10 @@ func h(writer http.ResponseWriter, request *http.Request, uri string) int {
 	}
 
 	switch uri {
+	case "/whspeech/save":
+		return save(writer, request)
+	case "/whspeech/data":
+		return data(writer, request)
 	case "/whspeech/outline":
 		return outline(writer, request)
 	case "/whspeech/uniques":

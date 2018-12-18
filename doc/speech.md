@@ -6,6 +6,41 @@
 
 需要先添加[认证](auth.md)后才能使用。
 
+## 保存数据
+
+HTTP POST: /whspeech/save
+
+参数
+
+|名称|类型|必须|说明|
+|---|---|---|---|
+|token|string|是|认证Token。|
+|data|string|是|数据。|
+
+返回值
+
+```
+success
+```
+
+> 需要IP白名单或签名认证。
+
+## 获取数据
+
+HTTP POST: /whspeech/data
+
+参数
+
+|名称|类型|必须|说明|
+|---|---|---|---|
+|ticket|string|是|认证Ticket。|
+
+返回值
+
+```
+data
+```
+
 ## 生产
 
 ```json
@@ -81,7 +116,8 @@ HTTP POST: /whspeech/outline
     "types": [{
         "name": "类型",
         "count": "数量"
-    }]
+    }],
+    "finish": "是否已结束：true/false"
 }
 ```
 

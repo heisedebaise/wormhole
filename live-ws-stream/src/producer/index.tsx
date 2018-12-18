@@ -1,5 +1,4 @@
 import * as React from 'react';
-import http from '../util/http';
 import ws from './ws';
 import './index.css';
 

@@ -14,6 +14,7 @@ type outlineStruct struct {
 	Modify int64        `json:"modify"`
 	Unique string       `json:"unique"`
 	Types  []typeStruct `json:"types"`
+	Finish bool         `json:"finish"`
 }
 
 type typeStruct struct {
@@ -32,7 +33,7 @@ func scan() {
 					auth := info.Name()
 					time := modifyTime(auth)
 					if time > timeout {
-						setOutline(auth)
+						setOutline(auth, false)
 					} else if time > overdue {
 						finish(auth)
 					}
@@ -47,10 +48,10 @@ func finish(auth string) {
 		delete(consumerChans, conn)
 	}
 	delete(consumers, auth)
-	setOutline(auth)
+	setOutline(auth, true)
 }
 
-func setOutline(auth string) {
+func setOutline(auth string, finish bool) {
 	file, err := os.Open(getUniques(auth))
 	if err != nil {
 		return
@@ -74,7 +75,7 @@ func setOutline(auth string) {
 		ts = append(ts, typeStruct{name, count})
 	}
 
-	if data, err := json.Marshal(outlineStruct{createTime(auth), modifyTime(auth), unique, ts}); err == nil {
+	if data, err := json.Marshal(outlineStruct{createTime(auth), modifyTime(auth), unique, ts, finish}); err == nil {
 		ioutil.WriteFile(getOutline(auth), data, 0644)
 	}
 }
