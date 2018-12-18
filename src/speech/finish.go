@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 	"time"
@@ -45,7 +44,6 @@ func scan() {
 }
 
 func finish(auth string) {
-	log.Println("1111", auth)
 	for _, conn := range consumers[auth] {
 		delete(consumerChans, conn)
 	}
@@ -54,14 +52,11 @@ func finish(auth string) {
 }
 
 func setOutline(auth string, finish bool) {
-	log.Println("222", auth, finish)
 	file, err := os.Open(getUniques(auth))
 	if err != nil {
-		log.Println("333", auth, err)
 		return
 	}
 
-	log.Println("444", auth)
 	types := make(map[string]int)
 	var unique string
 	scanner := bufio.NewScanner(bufio.NewReader(file))
@@ -80,9 +75,19 @@ func setOutline(auth string, finish bool) {
 		ts = append(ts, typeStruct{name, count})
 	}
 
-	if data, err := json.Marshal(outlineStruct{Create: createTime(auth), Modify: modifyTime(auth), Unique: unique, Types: ts, Finish: finish}); err == nil {
-		log.Println("5555", auth)
-		ioutil.WriteFile(getOutline(auth), data, 0644)
+	outline := getOutline(auth)
+	if data, err := json.Marshal(outlineStruct{Create: createTime(auth), Modify: modifyTime(auth), Unique: unique, Types: ts, Finish: finish || finished(outline)}); err == nil {
+		ioutil.WriteFile(outline, data, 0644)
 	}
-	log.Println("666", auth)
+}
+
+func finished(outline string) bool {
+	if data, err := ioutil.ReadFile(outline); err == nil {
+		var ol outlineStruct
+		if json.Unmarshal(data, &ol) == nil {
+			return ol.Finish
+		}
+	}
+
+	return false
 }
