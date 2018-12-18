@@ -1,6 +1,7 @@
 package speech
 
 import (
+	"log"
 	"auth"
 	"bytes"
 	"httpserv"
@@ -10,6 +11,7 @@ import (
 
 func outline(writer http.ResponseWriter, request *http.Request) int {
 	auth := httpserv.GetParam(request, "auth", "")
+	log.Println(auth,getOutline(auth))
 	if auth == "" {
 		return httpserv.SendFailure(writer, httpserv.Failure{Code: 2105, Message: "Auth不允许为空！"})
 	}
