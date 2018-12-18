@@ -45,6 +45,12 @@ func handle(writer http.ResponseWriter, request *http.Request) {
 	if cfg.Cors {
 		SetHeader(writer, "Access-Control-Allow-Origin", "*")
 	}
+	if request.Method == "OPTIONS" {
+		SendCode(writer, 204)
+
+		return
+	}
+	
 	uri := request.RequestURI
 	code := -1
 	for root, handler := range handlers {
