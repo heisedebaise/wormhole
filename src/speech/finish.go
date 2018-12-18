@@ -34,7 +34,7 @@ func scan() {
 				for _, info := range infos {
 					auth := info.Name()
 					time := modifyTime(auth)
-					log.Println(auth, time)
+					log.Println(auth, time, timeout, overdue)
 					if time > timeout {
 						setOutline(auth, false)
 					} else if time > overdue {
