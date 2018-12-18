@@ -23,7 +23,7 @@ func save(writer http.ResponseWriter, request *http.Request) int {
 	}
 
 	ioutil.WriteFile(getData(id), []byte(data), 0644)
-	writer.Write([]byte("success"))
+	httpserv.SendSuccess(writer, nil)
 
 	return 200
 }

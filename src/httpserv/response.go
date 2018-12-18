@@ -5,22 +5,41 @@ import (
 	"net/http"
 )
 
+// Success 成功信息。
+type Success struct {
+	Code int         `json:"code"`
+	Data interface{} `json:"data"`
+}
+
 // Failure 失败信息。
 type Failure struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
 
-// SendFailure 发送失败信息。
-func SendFailure(writer http.ResponseWriter, failure Failure) int {
-	data, err := json.Marshal(failure)
-	if err == nil {
-		writer.Write(data)
+// SendSuccess 发送成功信息。
+func SendSuccess(writer http.ResponseWriter, data interface{}) int {
+	if data == nil {
+		writer.Write([]byte("{code:0}"))
 	} else {
-		writer.Write([]byte(err.Error()))
+		WriteJSON(writer, Success{Code: 0, Data: data})
 	}
 
 	return Send200(writer)
+}
+
+// SendFailure 发送失败信息。
+func SendFailure(writer http.ResponseWriter, failure Failure) int {
+	WriteJSON(writer, failure)
+
+	return Send200(writer)
+}
+
+// WriteJSON 输出JSON数据。
+func WriteJSON(writer http.ResponseWriter, v interface{}) {
+	if data, err := json.Marshal(v); err == nil {
+		writer.Write(data)
+	}
 }
 
 // Send200 发送200。
