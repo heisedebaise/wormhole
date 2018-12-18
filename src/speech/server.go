@@ -41,7 +41,7 @@ func ws(conn *websocket.Conn, message wserv.Message) {
 	} else if message.Operation == "speech.pull" {
 		pull(consumer, message, conn)
 	} else if message.Operation == "speech.finish" {
-		finish(consumer)
+		finish(producer)
 	}
 }
 
