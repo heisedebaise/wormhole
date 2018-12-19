@@ -57,6 +57,7 @@ func setOutline(auth string, finish bool) {
 		return
 	}
 
+	defer file.Close()
 	types := make(map[string]int)
 	var unique string
 	scanner := bufio.NewScanner(bufio.NewReader(file))

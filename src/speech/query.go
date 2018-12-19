@@ -2,10 +2,13 @@ package speech
 
 import (
 	"auth"
+	"bufio"
 	"bytes"
 	"httpserv"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"strings"
 )
 
 func outline(writer http.ResponseWriter, request *http.Request) int {
@@ -37,38 +40,47 @@ func track(writer http.ResponseWriter, request *http.Request) int {
 		return httpserv.SendFailure(writer, httpserv.Failure{Code: 2104, Message: "Ticket[" + ticket + "]认证失败！"})
 	}
 
-	path := getPath(consumer, httpserv.GetParam(request, "type", ""))
-	if infos, err := ioutil.ReadDir(path); err == nil {
-		start := httpserv.GetParam(request, "start", "")
-		end := httpserv.GetParam(request, "end", "")
-		var buffer bytes.Buffer
-		buffer.WriteString("[")
-		first := true
-		comma := []byte(",")
-		for _, info := range infos {
-			name := info.Name()
-			if start != "" && start > name {
-				continue
-			}
-
-			if end != "" && end < name {
-				break
-			}
-
-			if data, err := ioutil.ReadFile(path + name); err == nil {
-				if first {
-					first = false
-				} else {
-					buffer.Write(comma)
-				}
-				buffer.Write(data)
-			}
-		}
-		buffer.WriteString("]")
-		buffer.WriteTo(writer)
-
-		return 200
+	file, err := os.Open(getUniques(consumer))
+	if err != nil {
+		return httpserv.SendFailure(writer, httpserv.Failure{Code: 2104, Message: "Uniques[" + consumer + "]不存在！"})
 	}
 
-	return httpserv.Send404(writer)
+	defer file.Close()
+	t := httpserv.GetParam(request, "type", "")
+	start := httpserv.GetParam(request, "start", "")
+	end := httpserv.GetParam(request, "end", "")
+	var buffer bytes.Buffer
+	buffer.WriteString("[")
+	first := true
+	comma := []byte(",")
+	scanner := bufio.NewScanner(bufio.NewReader(file))
+	for scanner.Scan() {
+		line := scanner.Text()
+		indexOf := strings.Index(line, ":")
+		if indexOf == -1 || (t != "" && line[:indexOf] != t) {
+			continue
+		}
+
+		unique := line[indexOf+1:]
+		if start != "" && start > unique {
+			continue
+		}
+
+		if end != "" && end < unique {
+			break
+		}
+
+		if data, err := ioutil.ReadFile(getPath(consumer, t) + unique); err == nil {
+			if first {
+				first = false
+			} else {
+				buffer.Write(comma)
+			}
+			buffer.Write(data)
+		}
+	}
+	buffer.WriteString("]")
+	buffer.WriteTo(writer)
+
+	return 200
 }
