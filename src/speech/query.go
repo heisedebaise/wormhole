@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"httpserv"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -47,7 +46,7 @@ func track(writer http.ResponseWriter, request *http.Request) int {
 	}
 
 	defer file.Close()
-	t := httpserv.GetParam(request, "type", "")
+	pType := httpserv.GetParam(request, "type", "")
 	start := httpserv.GetParam(request, "start", "")
 	end := httpserv.GetParam(request, "end", "")
 	var buffer bytes.Buffer
@@ -58,24 +57,25 @@ func track(writer http.ResponseWriter, request *http.Request) int {
 	for scanner.Scan() {
 		line := scanner.Text()
 		indexOf := strings.Index(line, ":")
-		log.Println("11", line, indexOf, t)
-		if indexOf == -1 || (t != "" && line[:indexOf] != t) {
+		if indexOf == -1 {
+			continue
+		}
+
+		lType := line[:indexOf]
+		if pType != "" && lType != pType {
 			continue
 		}
 
 		unique := line[indexOf+1:]
-		log.Println("22", line, indexOf, t, unique, start, end)
 		if start != "" && start > unique {
 			continue
 		}
 
-		log.Println("33", line, indexOf, t, unique, start, end)
 		if end != "" && end < unique {
 			break
 		}
 
-		log.Println("44", line, indexOf, t, unique, start, end)
-		if data, err := ioutil.ReadFile(getPath(consumer, t) + unique); err == nil {
+		if data, err := ioutil.ReadFile(getPath(consumer, lType) + unique); err == nil {
 			if first {
 				first = false
 			} else {
