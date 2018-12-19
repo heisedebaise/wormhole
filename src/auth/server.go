@@ -29,9 +29,7 @@ func handle(writer http.ResponseWriter, request *http.Request, uri string) int {
 		return httpserv.Send404(writer)
 	}
 
-	httpserv.SendSuccess(writer, nil)
-
-	return 200
+	return httpserv.SendSuccess(writer, nil)
 }
 
 // Serve 服务。

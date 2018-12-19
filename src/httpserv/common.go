@@ -8,8 +8,14 @@ import (
 type config struct {
 	Listen string
 	RealIP string
-	Cors   bool
+	Cors   cors
 	SSL    ssl
+}
+
+type cors struct {
+	Origin  []string
+	Methods string
+	Headers string
 }
 
 type ssl struct {
@@ -18,7 +24,7 @@ type ssl struct {
 	Key    string
 }
 
-var cfg = config{":8192", "", false, ssl{":8193", "conf/ssl/wormhole.crt", "conf/ssl/wormhole.key"}}
+var cfg = config{":8192", "", cors{[]string{}, "GET,POST", ""}, ssl{":8193", "conf/ssl/wormhole.crt", "conf/ssl/wormhole.key"}}
 
 func init() {
 	util.LoadConfig(&cfg, "http")

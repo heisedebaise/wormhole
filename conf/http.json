@@ -1,7 +1,11 @@
 {
     "Listen": ":8192",
     "RealIP": "",
-    "Cors": true,
+    "Cors": {
+        "Origin": [],
+        "Methods": "GET,POST",
+        "Headers": ""
+    },
     "SSL": {
         "Listen": ":8193",
         "Crt": "conf/ssl/wormhole.crt",

@@ -42,14 +42,8 @@ func HTTP(path string) {
 
 func handle(writer http.ResponseWriter, request *http.Request) {
 	now := time.Now().UnixNano()
-	if cfg.Cors {
-		SetHeader(writer, "Access-Control-Allow-Origin", "*")
-		SetHeader(writer, "Access-Control-Allow-Methods", "*")
-		SetHeader(writer, "Access-Control-Allow-Headers", "*")
-		SetHeader(writer, "Access-Control-Allow-Credentials", "true")
-	}
 	if request.Method == "OPTIONS" {
-		SendCode(writer, 204)
+		setCors(writer, request)
 
 		return
 	}
@@ -67,6 +61,29 @@ func handle(writer http.ResponseWriter, request *http.Request) {
 		code = Send404(writer)
 	}
 	log.Printf("%d: uri=%s;remote=%s;time=%fms\n", code, uri, GetIP(request), float64((time.Now().UnixNano()-now))/1000000)
+}
+
+func setCors(writer http.ResponseWriter, request *http.Request) {
+	SendCode(writer, 204)
+	origin := GetHeader(request, "Origin")
+	if len(cfg.Cors.Origin) == 0 || (!contains(cfg.Cors.Origin, "*") && !contains(cfg.Cors.Origin, origin)) {
+		return
+	}
+
+	SetHeader(writer, "Access-Control-Allow-Origin", origin)
+	SetHeader(writer, "Access-Control-Allow-Methods", cfg.Cors.Methods)
+	SetHeader(writer, "Access-Control-Allow-Headers", cfg.Cors.Headers)
+	SetHeader(writer, "Access-Control-Allow-Credentials", "true")
+}
+
+func contains(strs []string, str string) bool {
+	for _, s := range strs {
+		if s == str {
+			return true
+		}
+	}
+
+	return false
 }
 
 // Handler 添加处理器。

@@ -25,14 +25,14 @@ func SendSuccess(writer http.ResponseWriter, data interface{}) int {
 		WriteJSON(writer, Success{Code: 0, Data: data})
 	}
 
-	return Send200(writer)
+	return 200
 }
 
 // SendFailure 发送失败信息。
 func SendFailure(writer http.ResponseWriter, failure Failure) int {
 	WriteJSON(writer, failure)
 
-	return Send200(writer)
+	return 200
 }
 
 // WriteJSON 输出JSON数据。
@@ -40,11 +40,6 @@ func WriteJSON(writer http.ResponseWriter, v interface{}) {
 	if data, err := json.Marshal(v); err == nil {
 		writer.Write(data)
 	}
-}
-
-// Send200 发送200。
-func Send200(writer http.ResponseWriter) int {
-	return SendCode(writer, 200)
 }
 
 // Send404 发送404。
