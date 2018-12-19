@@ -66,7 +66,9 @@ func handle(writer http.ResponseWriter, request *http.Request) {
 func setCors(writer http.ResponseWriter, request *http.Request) {
 	SendCode(writer, 204)
 	origin := GetHeader(request, "Origin")
+	log.Println("11",origin)
 	if len(cfg.Cors.Origin) == 0 || (!contains(cfg.Cors.Origin, "*") && !contains(cfg.Cors.Origin, origin)) {
+		log.Println("22",origin)
 		return
 	}
 
@@ -74,6 +76,7 @@ func setCors(writer http.ResponseWriter, request *http.Request) {
 	SetHeader(writer, "Access-Control-Allow-Methods", cfg.Cors.Methods)
 	SetHeader(writer, "Access-Control-Allow-Headers", cfg.Cors.Headers)
 	SetHeader(writer, "Access-Control-Allow-Credentials", "true")
+	log.Println("33",origin)
 }
 
 func contains(strs []string, str string) bool {
