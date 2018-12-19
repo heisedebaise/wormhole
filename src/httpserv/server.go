@@ -42,8 +42,9 @@ func HTTP(path string) {
 
 func handle(writer http.ResponseWriter, request *http.Request) {
 	now := time.Now().UnixNano()
+	setCors(writer, request)
 	if request.Method == "OPTIONS" {
-		setCors(writer, request)
+		SendCode(writer, 204)
 
 		return
 	}
@@ -65,10 +66,7 @@ func handle(writer http.ResponseWriter, request *http.Request) {
 
 func setCors(writer http.ResponseWriter, request *http.Request) {
 	origin := GetHeader(request, "Origin")
-	log.Println("11",origin)
 	if len(cfg.Cors.Origin) == 0 || (!contains(cfg.Cors.Origin, "*") && !contains(cfg.Cors.Origin, origin)) {
-		SendCode(writer, 204)
-		log.Println("22",origin)
 		return
 	}
 
@@ -76,8 +74,6 @@ func setCors(writer http.ResponseWriter, request *http.Request) {
 	SetHeader(writer, "Access-Control-Allow-Methods", cfg.Cors.Methods)
 	SetHeader(writer, "Access-Control-Allow-Headers", cfg.Cors.Headers)
 	SetHeader(writer, "Access-Control-Allow-Credentials", "true")
-	SendCode(writer, 204)
-	log.Println("33",origin)
 }
 
 func contains(strs []string, str string) bool {
