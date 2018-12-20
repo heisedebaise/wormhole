@@ -11,7 +11,7 @@ type config struct {
 	nTimeout int64
 }
 
-var cfg = config{"8h", 0}
+var cfg = config{"5", 0}
 var root = "speech/"
 
 func init() {

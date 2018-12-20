@@ -25,16 +25,16 @@ type typeStruct struct {
 func scan() {
 	go func() {
 		for {
-			time.Sleep(time.Minute)
+			time.Sleep(time.Second)
 			timeout := time.Now().Unix() - cfg.nTimeout
-			overdue := timeout - (cfg.nTimeout >> 3)
+			overdue := timeout - cfg.nTimeout
 			if infos, err := ioutil.ReadDir(root); err == nil {
 				for _, info := range infos {
 					auth := info.Name()
-					time := modifyTime(auth)
-					if time > timeout {
+					mTime := modifyTime(auth)
+					if mTime > timeout {
 						setOutline(auth, false)
-					} else if time > overdue {
+					} else if mTime > overdue {
 						finish(auth)
 					}
 				}
