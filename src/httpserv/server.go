@@ -66,6 +66,9 @@ func handle(writer http.ResponseWriter, request *http.Request) {
 
 func setCors(writer http.ResponseWriter, request *http.Request) {
 	origin := GetHeader(request, "Origin")
+	if origin == "" {
+		origin = "*"
+	}
 	if len(cfg.Cors.Origin) == 0 || (!contains(cfg.Cors.Origin, "*") && !contains(cfg.Cors.Origin, origin)) {
 		return
 	}
