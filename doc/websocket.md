@@ -8,6 +8,7 @@ WebSocket默认跟随HTTP启动，数据格式描述如下：
     "operation": "操作",
     "unique": "消息唯一值",
     "type": "类型",
+    "state": "状态",
     "content": "消息内容"
 }
 ```
