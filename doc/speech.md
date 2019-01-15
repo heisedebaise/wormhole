@@ -49,6 +49,7 @@ data
     "operation": "speech.produce",
     "unique": "消息唯一值",
     "type": "类型",
+    "state": "状态：nopush-不推送",
     "content": "消息内容"
 }
 ```

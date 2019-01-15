@@ -1,4 +1,5 @@
 import auth from '../util/auth';
+import player from './player';
 
 class ProducerWs {
     private unique: string;
@@ -15,6 +16,8 @@ class ProducerWs {
             auth: this.unique,
             operation: 'speech.consumer'
         }));
+
+        player.play();
     }
 
     public pull(): void {
@@ -26,19 +29,7 @@ class ProducerWs {
     }
 
     public receive(event: MessageEvent): void {
-        const video: HTMLVideoElement | null = document.querySelector('#consumer video');
-        if (video === null) {
-            return;
-        }
-
-        video.src = JSON.parse(event.data).content;
-
-        // const source: HTMLSourceElement = document.createElement('source');
-        // source.type = 'video/webm';
-        // source.src = JSON.parse(event.data).content;
-        // video.appendChild(source);
-        video.load();
-        video.play();
+        player.message(JSON.parse(event.data).content);
     }
 }
 

@@ -18,6 +18,7 @@ type Message struct {
 	Operation string `json:"operation"`
 	Unique    string `json:"unique"`
 	Type      string `json:"type"`
+	State     string `json:"state"`
 	Content   string `json:"content"`
 }
 

@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 	"wserv"
 )
 
@@ -20,7 +21,9 @@ func produce(auth string, message wserv.Message) {
 		return
 	}
 
-	push(auth, data)
+	if !strings.Contains(message.State, "nopush") {
+		push(auth, data)
+	}
 	write(auth, message, data)
 }
 
