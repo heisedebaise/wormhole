@@ -1,4 +1,7 @@
 [{
     "Path": "logs",
     "Timeout": "7d"
+},{
+    "Path": "whtemp",
+    "Timeout": "1d"
 }]

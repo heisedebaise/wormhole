@@ -7,6 +7,7 @@ import (
 	"imgserv"
 	"rsync"
 	"speech"
+	"temporary"
 	"wserv"
 )
 
@@ -17,6 +18,7 @@ func main() {
 	auth.Serve()
 	imgserv.Serve()
 	fileserv.Serve()
+	temporary.Serve()
 	speech.Serve()
 	httpserv.HTTP("/")
 }
