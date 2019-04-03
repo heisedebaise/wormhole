@@ -24,7 +24,7 @@ func copy(writer http.ResponseWriter, request *http.Request) int {
 		return httpserv.Send404(writer)
 	}
 
-	path, _ := filepath.Abs(uri)
+	path, _ := filepath.Abs(uri[1:])
 	if info, err := os.Stat(path); err != nil || info.IsDir() {
 		log.Printf("not exists or read dir %s %q\n", path, err)
 
