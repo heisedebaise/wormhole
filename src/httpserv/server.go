@@ -65,7 +65,6 @@ func HTTP(path string) {
 func handle(writer http.ResponseWriter, request *http.Request) {
 	now := time.Now().UnixNano()
 	setCors(writer, request)
-	log.Println(request.URL.Port())
 	if request.Method == "OPTIONS" {
 		SendCode(writer, 204)
 
