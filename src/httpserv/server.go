@@ -1,6 +1,7 @@
 package httpserv
 
 import (
+	"crypto/tls"
 	"log"
 	"net/http"
 	"strings"
@@ -23,11 +24,31 @@ func HTTP(path string) {
 		}
 	}()
 
-	if cfg.SSL.Listen != "" && cfg.SSL.Crt != "" && cfg.SSL.Key != "" {
+	if cfg.SSL.Listen != "" && len(cfg.SSL.Certs) > 0 {
 		httpsChan := make(chan int)
 		go func() {
+			tlsConfig := &tls.Config{}
+			for _, cert := range cfg.SSL.Certs {
+				if x509KeyPair, err := tls.LoadX509KeyPair(cert.Crt, cert.Key); err == nil {
+					tlsConfig.Certificates = append(tlsConfig.Certificates, x509KeyPair)
+				} else {
+					log.Printf("fail to load cert %v %v\n", cert, err)
+				}
+			}
+			if len(tlsConfig.Certificates) == 0 {
+				log.Printf("cert is empty %v\n", cfg)
+
+				return
+			}
+
 			log.Printf("https listening on %s\n", cfg.SSL.Listen)
-			if err := http.ListenAndServeTLS(cfg.SSL.Listen, cfg.SSL.Crt, cfg.SSL.Key, nil); err != nil {
+			tlsConfig.BuildNameToCertificate()
+			server := http.Server{
+				Addr:      cfg.SSL.Listen,
+				Handler:   nil,
+				TLSConfig: tlsConfig,
+			}
+			if err := server.ListenAndServeTLS("", ""); err != nil {
 				log.Fatalln(err)
 				httpsChan <- -0
 			} else {

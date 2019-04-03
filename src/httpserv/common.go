@@ -20,11 +20,15 @@ type cors struct {
 
 type ssl struct {
 	Listen string
-	Crt    string
-	Key    string
+	Certs  []cert
 }
 
-var cfg = config{":8192", "", cors{[]string{}, "GET,POST", ""}, ssl{":8193", "conf/ssl/wormhole.crt", "conf/ssl/wormhole.key"}}
+type cert struct {
+	Crt string
+	Key string
+}
+
+var cfg = config{":8192", "", cors{[]string{}, "GET,POST", ""}, ssl{":8193", []cert{{"conf/ssl/wormhole.crt", "conf/ssl/wormhole.key"}}}}
 
 func init() {
 	util.LoadConfig(&cfg, "http")

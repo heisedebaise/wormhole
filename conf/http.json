@@ -8,7 +8,9 @@
     },
     "SSL": {
         "Listen": ":8193",
-        "Crt": "conf/ssl/wormhole.crt",
-        "Key": "conf/ssl/wormhole.key"
+        "Certs": [{
+            "Crt": "conf/ssl/wormhole.crt",
+            "Key": "conf/ssl/wormhole.key"
+        }]
     }
 }
