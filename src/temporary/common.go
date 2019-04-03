@@ -20,8 +20,7 @@ func init() {
 	}
 
 	root, _ = filepath.Abs(cfg.Root)
-	// os.MkdirAll(root, os.ModePerm)
-	log.Printf("temporary mkdir: %+v\n", os.MkdirAll(root, os.ModePerm))
+	os.MkdirAll(root, os.ModePerm)
 	root = root + "/"
 	cfg.Root = util.FormatPath("/" + cfg.Root + "/")
 	log.Printf("temporary config: %+v\n", cfg)
