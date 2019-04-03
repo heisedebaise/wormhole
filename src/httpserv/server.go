@@ -42,13 +42,14 @@ func HTTP(path string) {
 			}
 
 			log.Printf("https listening on %v\n", cfg.SSL)
-			tlsConfig.BuildNameToCertificate()
-			server := http.Server{
-				Addr:      cfg.SSL.Listen,
-				Handler:   nil,
-				TLSConfig: tlsConfig,
-			}
-			if err := server.ListenAndServeTLS("", ""); err != nil {
+			// tlsConfig.BuildNameToCertificate()
+			// server := http.Server{
+			// 	Addr:      cfg.SSL.Listen,
+			// 	Handler:   nil,
+			// 	TLSConfig: tlsConfig,
+			// }
+			// if err := server.ListenAndServeTLS("", ""); err != nil {
+			if _, err := tls.Listen("tcp", cfg.SSL.Listen, tlsConfig); err != nil {
 				log.Fatalln(err)
 				httpsChan <- -0
 			} else {
@@ -64,6 +65,7 @@ func HTTP(path string) {
 func handle(writer http.ResponseWriter, request *http.Request) {
 	now := time.Now().UnixNano()
 	setCors(writer, request)
+	log.Println(request.URL.Port())
 	if request.Method == "OPTIONS" {
 		SendCode(writer, 204)
 
