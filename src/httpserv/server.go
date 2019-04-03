@@ -41,7 +41,7 @@ func HTTP(path string) {
 				return
 			}
 
-			log.Printf("https listening on %s\n", cfg.SSL.Listen)
+			log.Printf("https listening on %v\n", cfg.SSL)
 			tlsConfig.BuildNameToCertificate()
 			server := http.Server{
 				Addr:      cfg.SSL.Listen,
