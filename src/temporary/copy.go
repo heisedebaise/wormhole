@@ -42,7 +42,7 @@ func copy(writer http.ResponseWriter, request *http.Request) int {
 	name := util.RandomString(32) + uri[strings.LastIndex(uri, "."):]
 	target, err := os.Create(absolute(name))
 	if err != nil {
-		log.Printf("create %s fail %q\n", root+name, err)
+		log.Printf("create %s fail %q\n", absolute(name), err)
 
 		return httpserv.Send404(writer)
 	}
