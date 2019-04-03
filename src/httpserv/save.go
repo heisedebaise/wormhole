@@ -59,7 +59,8 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 		name = AppendSuffix(name, handler)
 	}
 
-	absPath := util.FormatPath(absRoot + path + "/" + name)
+	// absPath := util.FormatPath(absRoot + path + "/" + name)
+	absPath := absolute(absRoot, path, name)
 	out, err := os.OpenFile(absPath, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		log.Printf("fail to open file: %q\n", err)

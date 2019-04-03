@@ -2,6 +2,7 @@ package httpserv
 
 import (
 	"log"
+	"strings"
 	"util"
 )
 
@@ -34,4 +35,21 @@ func init() {
 	util.LoadConfig(&cfg, "http")
 
 	log.Printf("http config: %+v\n", cfg)
+}
+
+func absolute(root string, path string, name string) string {
+	length := strings.LastIndex(name, ".")
+	if length == -1 {
+		length = len(name)
+	}
+
+	abs := root + path
+	i := 0
+	for ; i < length; i += 2 {
+		abs += "/" + name[i:i+2]
+	}
+	abs += name[i:]
+	log.Println(util.FormatPath(abs))
+
+	return util.FormatPath(root + path + "/" + name)
 }
