@@ -34,7 +34,7 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 			return "", "", Send404(writer)
 		}
 
-		name = md5PathName(AppendSuffix(name, handler))
+		name = util.Md5PathName(AppendSuffix(name, handler))
 	}
 
 	path := GetParam(request, "path", "")

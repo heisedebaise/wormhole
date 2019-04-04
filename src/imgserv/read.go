@@ -21,8 +21,7 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) int {
 	}
 	uri = uri[len(cfg.Root):]
 	path := absolute(uri)
-	info, err := os.Stat(path)
-	if err == nil {
+	if info, err := os.Stat(path); err == nil {
 		if info.IsDir() {
 			log.Printf("read dir %s\n", uri)
 
@@ -32,8 +31,24 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) int {
 		return httpserv.ServeFile(writer, request, info, path)
 	}
 
-	index := strings.LastIndex(uri, "/") + 1
-	names := strings.Split(uri[index:], ".")
+	lastIndex := strings.LastIndex(path, "/")
+	name := path[lastIndex+1:]
+	if index := strings.Index(name, "."); index == 32 {
+		name = util.Md5PathName(name)
+		path = path[:lastIndex] + name
+		lastIndex = strings.LastIndex(path, "/")
+		if info, err := os.Stat(path); err == nil {
+			if info.IsDir() {
+				log.Printf("read dir %s\n", uri)
+
+				return httpserv.Send404(writer)
+			}
+
+			return httpserv.ServeFile(writer, request, info, path)
+		}
+	}
+
+	names := strings.Split(path[lastIndex+1:], ".")
 	length := len(names)
 	if length <= 2 {
 		log.Printf("length<=2 %s\n", uri)
@@ -48,7 +63,7 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) int {
 		return httpserv.Send404(writer)
 	}
 
-	origin := absolute(uri[0:index] + names[0] + "." + suffix)
+	origin := path[:lastIndex+1] + names[0] + "." + suffix
 	if !util.Exists(origin) {
 		log.Printf("origin jpeg|png file not exists %s\n", uri)
 
