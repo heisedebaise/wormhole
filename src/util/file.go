@@ -9,7 +9,11 @@ import (
 
 // FormatPath 格式化路径。
 func FormatPath(path string) string {
-	return strings.Replace(path, "//", "/", -1)
+	for strings.Index(path, "//") > -1 {
+		path = strings.Replace(path, "//", "/", -1)
+	}
+
+	return path
 }
 
 // Exists 检查路径是否存在。
