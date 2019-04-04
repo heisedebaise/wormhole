@@ -18,10 +18,8 @@ func HTTP(path string) {
 		log.Printf("http listening on %s\n", cfg.Listen)
 		if err := http.ListenAndServe(cfg.Listen, nil); err != nil {
 			log.Fatalln(err)
-			httpChan <- -0
-		} else {
-			httpChan <- 0
 		}
+		httpChan <- 0
 	}()
 
 	if cfg.SSL.Listen != "" && len(cfg.SSL.Certs) > 0 {
@@ -42,7 +40,7 @@ func HTTP(path string) {
 			}
 
 			log.Printf("https listening on %v\n", cfg.SSL)
-			tlsConfig.BuildNameToCertificate()
+			// tlsConfig.BuildNameToCertificate()
 			server := http.Server{
 				Addr:      cfg.SSL.Listen,
 				Handler:   nil,
@@ -50,10 +48,8 @@ func HTTP(path string) {
 			}
 			if err := server.ListenAndServeTLS("", ""); err != nil {
 				log.Fatalln(err)
-				httpsChan <- -0
-			} else {
-				httpsChan <- 0
 			}
+			httpsChan <- 0
 		}()
 		<-httpsChan
 	}
