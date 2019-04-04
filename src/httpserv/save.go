@@ -20,7 +20,6 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 
 	name := GetParam(request, "name", "")
 	empty := name == ""
-	pathName := ""
 	if empty {
 		file, handler, err := request.FormFile("file")
 		if err != nil {
@@ -35,23 +34,14 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 			return "", "", Send404(writer)
 		}
 
-		name = AppendSuffix(name, handler)
-		pathName = md5PathName(name)
+		name = md5PathName(AppendSuffix(name, handler))
 	}
 
 	path := GetParam(request, "path", "")
-	if empty {
-		if util.Exists(util.FormatPath(absRoot + path + pathName)) {
-			fmt.Fprintf(writer, "%s", util.FormatPath(root+path+pathName))
+	if empty && util.Exists(util.FormatPath(absRoot+path+"/"+name)) {
+		fmt.Fprintf(writer, "%s", util.FormatPath(root+path+"/"+name))
 
-			return path, pathName, 200
-		}
-
-		if util.Exists(util.FormatPath(absRoot + path + "/" + name)) {
-			fmt.Fprintf(writer, "%s", util.FormatPath(root+path+"/"+name))
-
-			return path, name, 200
-		}
+		return path, name, 200
 	}
 
 	file, handler, err := request.FormFile("file")
@@ -66,12 +56,7 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 		name = AppendSuffix(name, handler)
 	}
 
-	absPath := ""
-	if pathName == "" {
-		absPath = util.FormatPath(absRoot + path + "/" + name)
-	} else {
-		absPath = util.FormatPath(absRoot + path + pathName)
-	}
+	absPath := util.FormatPath(absRoot + path + "/" + name)
 	os.MkdirAll(absPath[:strings.LastIndex(absPath, "/")], os.ModePerm)
 
 	out, err := os.OpenFile(absPath, os.O_WRONLY|os.O_CREATE, 0666)
@@ -82,14 +67,6 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 	}
 	defer out.Close()
 	io.Copy(out, file)
-
-	if empty {
-		uri := util.FormatPath(root + path + pathName)
-		rsync.SendFile(uri, absPath)
-		fmt.Fprintf(writer, "%s", util.FormatPath(root+path+pathName))
-
-		return path, pathName, 200
-	}
 
 	uri := util.FormatPath(root + path + "/" + name)
 	rsync.SendFile(uri, absPath)
