@@ -70,7 +70,7 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 
 	uri := util.FormatPath(root + path + "/" + name)
 	rsync.SendFile(uri, absPath)
-	fmt.Fprintf(writer, "%s", util.FormatPath(root+path+"/"+name))
+	fmt.Fprintf(writer, "%s", uri)
 
 	return path, name, 200
 }

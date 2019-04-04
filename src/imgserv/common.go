@@ -71,7 +71,7 @@ func move() {
 					}
 				}
 			}
-			log.Printf("move %d md5 file .\n", i)
+			log.Printf("move %d md5 file\n", i)
 
 			if i == 0 {
 				count++
