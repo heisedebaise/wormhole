@@ -40,6 +40,7 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 	path := GetParam(request, "path", "")
 	if empty && util.Exists(util.FormatPath(absRoot+path+"/"+name)) {
 		fmt.Fprintf(writer, "%s", util.FormatPath(root+path+"/"+name))
+		log.Println("YYYYYYYYYYYYYYYYYYYYYYYY:"+util.FormatPath(root+path+"/"+name))
 
 		return path, name, 200
 	}
@@ -71,6 +72,7 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 	uri := util.FormatPath(root + path + "/" + name)
 	rsync.SendFile(uri, absPath)
 	fmt.Fprintf(writer, "%s", uri)
+	log.Println("XXXXXXXXXXXXXXXXXXXXXXXXXXXX:"+uri)
 
 	return path, name, 200
 }
