@@ -53,3 +53,16 @@ func absolute(root string, path string, name string) string {
 
 	return util.FormatPath(root + path + "/" + name)
 }
+
+func md5PathName(name string) string {
+	pathName := ""
+	i := 0
+	for ; i < 32; i += 2 {
+		pathName += "/" + name[i:i+2]
+	}
+	if len(name) > 32 {
+		pathName += name[i:]
+	}
+
+	return pathName
+}

@@ -20,6 +20,7 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 
 	name := GetParam(request, "name", "")
 	empty := name == ""
+	pathName := ""
 	if empty {
 		file, handler, err := request.FormFile("file")
 		if err != nil {
@@ -35,17 +36,22 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 		}
 
 		name = AppendSuffix(name, handler)
+		pathName = md5PathName(name)
 	}
 
 	path := GetParam(request, "path", "")
-	if path != "" {
-		os.MkdirAll(util.FormatPath(absRoot+path), os.ModePerm)
-	}
-	log.Println(absolute(absRoot, path, name))
-	if empty && util.Exists(util.FormatPath(absRoot+path+"/"+name)) {
-		fmt.Fprintf(writer, "%s", util.FormatPath(root+path+"/"+name))
+	if empty {
+		if util.Exists(util.FormatPath(absRoot + path + pathName)) {
+			fmt.Fprintf(writer, "%s", util.FormatPath(root+path+pathName))
 
-		return path, name, 200
+			return path, pathName, 200
+		}
+
+		if util.Exists(util.FormatPath(absRoot + path + "/" + name)) {
+			fmt.Fprintf(writer, "%s", util.FormatPath(root+path+"/"+name))
+
+			return path, name, 200
+		}
 	}
 
 	file, handler, err := request.FormFile("file")
@@ -60,7 +66,14 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 		name = AppendSuffix(name, handler)
 	}
 
-	absPath := util.FormatPath(absRoot + path + "/" + name)
+	absPath := ""
+	if pathName == "" {
+		absPath = util.FormatPath(absRoot + path + "/" + name)
+	} else {
+		absPath = util.FormatPath(absRoot + path + pathName)
+	}
+	os.MkdirAll(absPath[:strings.LastIndex(absPath, "/")], os.ModePerm)
+
 	out, err := os.OpenFile(absPath, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		log.Printf("fail to open file: %q\n", err)
@@ -70,10 +83,17 @@ func Save(writer http.ResponseWriter, request *http.Request, maxSize int64, absR
 	defer out.Close()
 	io.Copy(out, file)
 
-	uri := util.FormatPath(root + path + "/" + name)
-	fmt.Fprintf(writer, "%s", util.FormatPath(root+path+"/"+name))
+	if empty {
+		uri := util.FormatPath(root + path + pathName)
+		rsync.SendFile(uri, absPath)
+		fmt.Fprintf(writer, "%s", util.FormatPath(root+path+pathName))
 
+		return path, pathName, 200
+	}
+
+	uri := util.FormatPath(root + path + "/" + name)
 	rsync.SendFile(uri, absPath)
+	fmt.Fprintf(writer, "%s", util.FormatPath(root+path+"/"+name))
 
 	return path, name, 200
 }
