@@ -63,6 +63,7 @@ func move() {
 				if strings.Index(name, ".") == 32 {
 					source := absolute(name)
 					target := absolute(util.Md5PathName(name))
+					os.MkdirAll(target[:strings.LastIndex(target, "/")], os.ModePerm)
 					if os.Rename(source, target) == nil {
 						i++
 					} else {
