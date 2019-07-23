@@ -1,13 +1,10 @@
 package imgserv
 
 import (
-	"bytes"
 	"httpserv"
 	"image"
 	"image/jpeg"
 	"image/png"
-	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -80,14 +77,15 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) int {
 		return httpserv.Send404(writer)
 	}
 
-	file, err := ioutil.ReadFile(origin)
+	file, err := os.Open(origin)
 	if err != nil {
 		log.Printf("fail to read origin jpeg|png file %s %q\n", uri, err)
 
 		return httpserv.Send404(writer)
 	}
+	defer file.Close()
 
-	image, err := decode(suffix, bytes.NewReader(file))
+	image, err := decode(suffix, file)
 	if err != nil {
 		log.Printf("fail to decode origin jpeg file %s %q\n", uri, err)
 
@@ -140,7 +138,7 @@ func getScaleQuality(names []string) (scale int, quality int, err error) {
 	return scale, quality, nil
 }
 
-func decode(suffix string, file io.Reader) (image.Image, error) {
+func decode(suffix string, file *os.File) (image.Image, error) {
 	if suffix == "png" {
 		return png.Decode(file)
 	}
