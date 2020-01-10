@@ -133,23 +133,18 @@ func getScaleQuality(names []string) (scale int, quality int, err error) {
 }
 
 func decode(path string) (image.Image, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	_, format, err := image.DecodeConfig(file)
-	if err != nil {
-		return nil, err
-	}
-
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
 	reader := bytes.NewReader(b)
+	_, format, err := image.DecodeConfig(reader)
+	if err != nil {
+		return nil, err
+	}
+
+	reader.Reset(b)
 	if format == "png" {
 		return png.Decode(reader)
 	}
