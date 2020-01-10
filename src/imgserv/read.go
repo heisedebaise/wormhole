@@ -1,10 +1,12 @@
 package imgserv
 
 import (
+	"bytes"
 	"httpserv"
 	"image"
 	"image/jpeg"
 	"image/png"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -77,15 +79,7 @@ func read(writer http.ResponseWriter, request *http.Request, uri string) int {
 		return httpserv.Send404(writer)
 	}
 
-	file, err := os.Open(origin)
-	if err != nil {
-		log.Printf("fail to read origin jpeg|png file %s %q\n", uri, err)
-
-		return httpserv.Send404(writer)
-	}
-	defer file.Close()
-
-	image, err := decode(suffix, file)
+	image, err := decode(origin)
 	if err != nil {
 		log.Printf("fail to decode origin jpeg file %s %q\n", uri, err)
 
@@ -138,12 +132,29 @@ func getScaleQuality(names []string) (scale int, quality int, err error) {
 	return scale, quality, nil
 }
 
-func decode(suffix string, file *os.File) (image.Image, error) {
-	if suffix == "png" {
-		return png.Decode(file)
+func decode(path string) (image.Image, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	_, format, err := image.DecodeConfig(file)
+	if err != nil {
+		return nil, err
 	}
 
-	return jpeg.Decode(file)
+	b, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	reader := bytes.NewReader(b)
+	if format == "png" {
+		return png.Decode(reader)
+	}
+
+	return jpeg.Decode(reader)
 }
 
 func encode(suffix string, out *os.File, image image.Image, quality int) error {
