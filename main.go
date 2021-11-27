@@ -72,7 +72,7 @@ func agent(accept net.Conn, server string) {
 	}
 	defer dial.Close()
 
-	ch := make(chan bool, 1)
+	ch := make(chan bool, 2)
 	go copy(accept, dial, ch)
 	go copy(dial, accept, ch)
 	<-ch
