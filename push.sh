@@ -4,7 +4,7 @@ git add go.mod
 git add main.go
 git add map.json
 git add push.sh
-git add README.mod
+git add README.md
 git add run.sh
 
 git commit -m dev
