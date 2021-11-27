@@ -66,6 +66,8 @@ func agent(accept net.Conn, server string) {
 
 	dial, err := net.Dial("tcp", server)
 	if err != nil {
+		log.Printf("dial to %s fail %v\n", server, err)
+		
 		return
 	}
 	defer dial.Close()
