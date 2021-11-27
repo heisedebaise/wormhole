@@ -9,9 +9,3 @@ go run main.go
 ```
 go build -o wormhole main.go
 ```
-
-# docker
-
-```
-docker build -t wormhole:latest .
-```
