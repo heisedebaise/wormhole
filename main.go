@@ -6,7 +6,12 @@ import (
 	"log"
 	"net"
 	"os"
+	"sync/atomic"
+	"time"
 )
+
+var units = []string{"B", "KB", "MB", "GB", "TB"}
+var count, request, response int32
 
 func main() {
 	bs, err := os.ReadFile("map.json")
@@ -29,6 +34,8 @@ func main() {
 		return
 	}
 
+	go stat()
+
 	ch := make(chan bool, 1)
 	for addr := range m {
 		if server, ok := m[addr].(string); ok {
@@ -36,6 +43,27 @@ func main() {
 		}
 	}
 	<-ch
+}
+
+func stat() {
+	for {
+		time.Sleep(time.Minute)
+		n1, u1 := flow(request)
+		n2, u2 := flow(response)
+		atomic.StoreInt32(&request, 0)
+		atomic.StoreInt32(&response, 0)
+		log.Printf("count=%d;request=%d%s;response=%d%s\n", count, n1, units[u1], n2, units[u2])
+	}
+}
+
+func flow(n int32) (int32, int) {
+	unit := 0
+	for n > 1024 {
+		n >>= 10
+		unit += 1
+	}
+
+	return n, unit
 }
 
 func serve(addr, server string) error {
@@ -67,18 +95,20 @@ func agent(accept net.Conn, server string) {
 	dial, err := net.Dial("tcp", server)
 	if err != nil {
 		log.Printf("dial to %s fail %v\n", server, err)
-		
+
 		return
 	}
 	defer dial.Close()
 
+	atomic.AddInt32(&count, 1)
 	ch := make(chan bool, 2)
-	go copy(accept, dial, ch)
-	go copy(dial, accept, ch)
+	go copy(accept, dial, &request, ch)
+	go copy(dial, accept, &response, ch)
 	<-ch
+	atomic.AddInt32(&count, -1)
 }
 
-func copy(reader io.Reader, wirter io.Writer, ch chan bool) {
+func copy(reader io.Reader, wirter io.Writer, sum *int32, ch chan bool) {
 	buffer := make([]byte, 1024)
 	for {
 		n, err := reader.Read(buffer)
@@ -88,6 +118,7 @@ func copy(reader io.Reader, wirter io.Writer, ch chan bool) {
 
 		if n > 0 {
 			wirter.Write(buffer[:n])
+			atomic.AddInt32(sum, int32(n))
 		}
 	}
 	ch <- true
