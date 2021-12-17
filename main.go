@@ -52,11 +52,12 @@ func stat() {
 		n2, u2 := flow(response)
 		atomic.StoreInt32(&request, 0)
 		atomic.StoreInt32(&response, 0)
-		log.Printf("count=%d;request=%d%s;response=%d%s\n", count, n1, units[u1], n2, units[u2])
+		log.Printf("count=%d;request=%d%s/s;response=%d%s/s\n", count, n1, units[u1], n2, units[u2])
 	}
 }
 
 func flow(n int32) (int32, int) {
+	n /= 60
 	unit := 0
 	for n > 1024 {
 		n >>= 10
