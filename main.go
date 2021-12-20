@@ -1,11 +1,10 @@
 package main
 
 import (
-	"bytes"
+	"compress/gzip"
 	"crypto/tls"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -143,14 +142,7 @@ func https(addr, server string) error {
 			atomic.AddInt64(&count, -1)
 		}()
 
-		body, err := ioutil.ReadAll(req.Body)
-		if err != nil {
-			log.Printf("read request body %s%s to %s:%s fail %v\n", addr, req.RequestURI, server, req.RequestURI, err)
-
-			return
-		}
-
-		r, err := http.NewRequest(req.Method, server+req.RequestURI, bytes.NewBuffer(body))
+		r, err := http.NewRequest(req.Method, server+req.RequestURI, req.Body)
 		if err != nil {
 			log.Printf("new request %s%s to %s:%s fail %v\n", addr, req.RequestURI, server, req.RequestURI, err)
 
@@ -170,18 +162,22 @@ func https(addr, server string) error {
 		}
 		defer res.Body.Close()
 
-		b, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			log.Printf("read response %s%s from %s:%s fail %v\n", addr, req.RequestURI, server, req.RequestURI, err)
-
-			return
-		}
-
 		writer.WriteHeader(res.StatusCode)
+		gz := false
 		for key := range res.Header {
+			if key == "Content-Encoding" && res.Header.Get(key) == "gzip" {
+				gz = true
+			}
 			writer.Header().Set(key, res.Header.Get(key))
 		}
-		n, err := writer.Write(b)
+
+		var reader io.Reader
+		if gz {
+			reader, _ = gzip.NewReader(res.Body)
+		} else {
+			reader = res.Body
+		}
+		n, err := io.Copy(writer, reader)
 		if err != nil {
 			log.Printf("write response %s%s from %s:%s fail %v\n", addr, req.RequestURI, server, req.RequestURI, err)
 
