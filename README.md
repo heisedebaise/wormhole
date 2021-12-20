@@ -22,17 +22,19 @@ map.json
 }
 ```
 
-- https
+http/s to http/s
 
 ```
 {
-    ":443": "https://192.168.0.5",
-    ":8443": "https://192.168.0.6:8443"
+    "http://:8085": "http://192.168.0.5",
+    "https://:8086": "http://192.168.0.6",
+    "http://:8087": "https://192.168.0.7",
+    "https://:8088": "http://192.168.0.8"
 }
 ```
 
-> https://github.com/FiloSottile/mkcert
+use https://github.com/FiloSottile/mkcert to generate tls
 
 ```
-mkcert -key-file key.pem -cert-file cert.pem  192.168.0.7
+mkcert -key-file key.pem -cert-file cert.pem  localhost
 ```

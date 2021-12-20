@@ -44,8 +44,7 @@ func main() {
 	ch := make(chan bool, 1)
 	for addr := range m {
 		if server, ok := m[addr].(string); ok {
-			log.Printf("listening %s to %s\n", addr, server)
-			if strings.HasPrefix(server, "https://") {
+			if strings.HasPrefix(addr, "http://") || strings.HasPrefix(addr, "https://") {
 				go https(addr, server)
 			} else {
 				go serve(addr, server)
@@ -78,6 +77,7 @@ func flow(n int64) (int64, int) {
 }
 
 func serve(addr, server string) error {
+	log.Printf("listening %s to %s\n", addr, server)
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
@@ -157,9 +157,9 @@ func https(addr, server string) error {
 			return
 		}
 
-		client := http.Client{
-			Timeout:   time.Minute,
-			Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}},
+		client := http.Client{Timeout: time.Minute}
+		if strings.HasPrefix(server, "https://") {
+			client.Transport = &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
 		}
 		r.Header = req.Header
 		res, err := client.Do(r)
@@ -177,6 +177,10 @@ func https(addr, server string) error {
 			return
 		}
 
+		writer.WriteHeader(res.StatusCode)
+		for key := range res.Header {
+			writer.Header().Set(key, res.Header.Get(key))
+		}
 		n, err := writer.Write(b)
 		if err != nil {
 			log.Printf("write response %s%s from %s:%s fail %v\n", addr, req.RequestURI, server, req.RequestURI, err)
@@ -187,5 +191,15 @@ func https(addr, server string) error {
 		atomic.AddInt64(&response, int64(n))
 	})
 
-	return http.ListenAndServeTLS(addr, "cert.pem", "key.pem", nil)
+	index := strings.Index(addr, "://")
+	addr = addr[index+3:]
+	if index == 5 {
+		log.Printf("listening https %s to %s\n", addr, server)
+
+		return http.ListenAndServeTLS(addr, "cert.pem", "key.pem", nil)
+	}
+
+	log.Printf("listening http %s to %s\n", addr, server)
+
+	return http.ListenAndServe(addr, nil)
 }
