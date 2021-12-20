@@ -161,6 +161,7 @@ func https(addr, server string) error {
 			Timeout:   time.Minute,
 			Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}},
 		}
+		r.Header = req.Header
 		res, err := client.Do(r)
 		if err != nil {
 			log.Printf("do request %s%s to %s:%s fail %v\n", addr, req.RequestURI, server, req.RequestURI, err)
