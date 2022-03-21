@@ -1,5 +1,7 @@
 #!/bin/bash
 
+git add conf
+git add serve
 git add go.mod
 git add main.go
 git add map.json
