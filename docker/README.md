@@ -11,15 +11,18 @@ podman build -t wormhole:latest docker/
 ## 运行
 
 ```bash
-docker run -d -p 8080:8080 \
+docker run -d \
+    -p 8080:8080 \
     --privileged=true \
     --restart=always \
     --network=local \
     --name=wormhole \
     wormhole:latest
 
-podman run -it --rm \
+podman run -d \
+    -p 8080:8080 \
     --privileged=true \
-    --name=go \
-    go:1.18
+    --pod=local \
+    --name=wormhole \
+    wormhole:latest
 ```
