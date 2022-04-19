@@ -1,4 +1,4 @@
-package serve
+package wormhole
 
 import (
 	"compress/gzip"
