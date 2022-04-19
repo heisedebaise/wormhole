@@ -17,6 +17,8 @@ func listenTCP(on, to string) error {
 	log.Printf("listening tcp %s to %s\n", on, to)
 	listener, err := net.Listen("tcp", on)
 	if err != nil {
+		log.Printf("listen tcp on %s err %v\n", on, err)
+
 		return err
 	}
 	defer listener.Close()
@@ -58,11 +60,18 @@ func tcpCopy(reader io.Reader, wirter io.Writer, sum *int64, ch chan bool) {
 	for {
 		n, err := reader.Read(buffer)
 		if err != nil {
+			log.Printf("read tcp err %v\n", err)
+
 			break
 		}
 
 		if n > 0 {
-			wirter.Write(buffer[:n])
+			if _, err = wirter.Write(buffer[:n]); err != nil {
+				log.Printf("write tcp err %v\n", err)
+
+				break
+			}
+
 			atomic.AddInt64(sum, int64(n))
 		}
 	}
