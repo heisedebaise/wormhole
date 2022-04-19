@@ -1,9 +1,10 @@
 #!/bin/bash
 
+git add bin
 git add conf
-git add serve
+git add main
 git add go.mod
-git add main.go
+git add *.go
 git add map.json
 git add push.sh
 git add README.md
