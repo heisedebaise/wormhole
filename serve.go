@@ -16,7 +16,7 @@ func Serve(config string) {
 
 	cfg := struct {
 		TCP  map[string]string `json:"tcp"`
-		HTTP []httpcfg         `json:"http"`
+		HTTP map[string]string `json:"http"`
 	}{}
 	if err = json.Unmarshal(bs, &cfg); err != nil {
 		log.Printf("unmarshal %s err %v\n", config, err)
@@ -26,7 +26,7 @@ func Serve(config string) {
 	log.Printf("load %s %v\n", config, cfg)
 
 	tcp(cfg.TCP)
-	https(cfg.HTTP)
+	serveHTTP(cfg.HTTP)
 
 	stat()
 }
