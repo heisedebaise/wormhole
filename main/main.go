@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	var c = flag.String("c", "map.json", "config file")
+	var c = flag.String("c", "config.json", "config file")
 	flag.Parse()
 
 	wormhole.Serve(*c)
