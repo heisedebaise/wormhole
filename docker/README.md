@@ -2,7 +2,7 @@
 
 ```
 docker run -d \
-    -p 8080:8080 \
+    -p 80:80 \
     --privileged=true \
     --restart=always \
     --network=local \
