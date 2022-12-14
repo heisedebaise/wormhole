@@ -1,9 +1,8 @@
 package wormhole
 
 import (
-	"log"
-	"sync/atomic"
-	"time"
+    "sync/atomic"
+    "time"
 )
 
 var units = []string{"B", "KB", "MB", "GB", "TB"}
@@ -16,7 +15,7 @@ func stat() {
 		n2, u2 := flow(response)
 		atomic.StoreInt64(&request, 0)
 		atomic.StoreInt64(&response, 0)
-		log.Printf("count=%d;request=%d%s/s;response=%d%s/s\n", count, n1, units[u1], n2, units[u2])
+		Log("count=%d;request=%d%s/s;response=%d%s/s", count, n1, units[u1], n2, units[u2])
 	}
 }
 

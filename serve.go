@@ -2,14 +2,13 @@ package wormhole
 
 import (
 	"encoding/json"
-	"log"
 	"os"
 )
 
 func Serve(config string) {
 	bs, err := os.ReadFile(config)
 	if err != nil {
-		log.Printf("load %s err %v\n", config, err)
+		Log("load %s err %v", config, err)
 
 		return
 	}
@@ -21,11 +20,11 @@ func Serve(config string) {
 		Capture map[string]string `json:"capture"`
 	}{}
 	if err = json.Unmarshal(bs, &cfg); err != nil {
-		log.Printf("unmarshal %s err %v\n", config, err)
+		Log("unmarshal %s err %v", config, err)
 
 		return
 	}
-	log.Printf("load %s %v\n", config, cfg)
+	Log("load %s %v", config, cfg)
 
 	tcp(cfg.TCP)
 	serveHTTP(cfg.HTTP, cfg.Replace, cfg.Capture)

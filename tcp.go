@@ -1,10 +1,9 @@
 package wormhole
 
 import (
-	"io"
-	"log"
-	"net"
-	"sync/atomic"
+    "io"
+    "net"
+    "sync/atomic"
 )
 
 func tcp(config map[string]string) {
@@ -14,10 +13,10 @@ func tcp(config map[string]string) {
 }
 
 func listenTCP(on, to string) error {
-	log.Printf("listening tcp %s to %s\n", on, to)
+	Log("listening tcp %s to %s", on, to)
 	listener, err := net.Listen("tcp", on)
 	if err != nil {
-		log.Printf("listen tcp on %s err %v\n", on, err)
+		Log("listen tcp on %s err %v", on, err)
 
 		return err
 	}
@@ -26,12 +25,12 @@ func listenTCP(on, to string) error {
 	for {
 		accept, err := listener.Accept()
 		if err != nil {
-			log.Printf("forward %v to %s err %v\n", on, to, err)
+			Log("forward %v to %s err %v", on, to, err)
 
 			continue
 		}
 
-		log.Printf("forward %v to %s\n", accept.LocalAddr(), to)
+		Log("forward %v to %s", accept.LocalAddr(), to)
 		go tcpAgent(accept, to)
 	}
 }
@@ -41,7 +40,7 @@ func tcpAgent(accept net.Conn, to string) {
 
 	dial, err := net.Dial("tcp", to)
 	if err != nil {
-		log.Printf("dial to %s err %v\n", to, err)
+		Log("dial to %s err %v", to, err)
 
 		return
 	}
@@ -60,14 +59,14 @@ func tcpCopy(reader io.Reader, wirter io.Writer, sum *int64, ch chan bool) {
 	for {
 		n, err := reader.Read(buffer)
 		if err != nil {
-			log.Printf("read tcp err %v\n", err)
+			Log("read tcp err %v", err)
 
 			break
 		}
 
 		if n > 0 {
 			if _, err = wirter.Write(buffer[:n]); err != nil {
-				log.Printf("write tcp err %v\n", err)
+				Log("write tcp err %v", err)
 
 				break
 			}
