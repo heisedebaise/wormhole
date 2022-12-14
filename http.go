@@ -1,15 +1,13 @@
 package wormhole
 
 import (
-	"bytes"
-	"crypto/tls"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
+    "crypto/tls"
+    "io"
+    "net/http"
+    "regexp"
+    "strconv"
+    "strings"
+    "time"
 )
 
 type httphandler struct {
@@ -28,12 +26,9 @@ func (h *httphandler) ServeHTTP(writer http.ResponseWriter, req *http.Request) {
 
 	to := h.to[strings.Index(h.to, "://")+3:]
 	for key := range req.Header {
-		value := req.Header.Get(key)
-		request.Header.Set(key, strings.ReplaceAll(value, req.Host, to))
-		if key == "Accept-Encoding" && strings.ContainsAny(value, "gzip") {
-			request.Header.Set("Accept-Encoding", "gzip")
-		}
+		request.Header.Set(key, strings.ReplaceAll(req.Header.Get(key), req.Host, to))
 	}
+	request.Header.Set("Accept-Encoding", "")
 	client := http.Client{
 		Timeout:   time.Minute,
 		Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}},
@@ -47,43 +42,36 @@ func (h *httphandler) ServeHTTP(writer http.ResponseWriter, req *http.Request) {
 	for key := range res.Header {
 		writer.Header().Set(key, res.Header.Get(key))
 	}
-	if len(h.capture) > 0 {
-		if mirror, ok := h.capture["mirror"]; ok && mirror == "yes" {
-			h.copy(writer, res, uri)
 
+	var reader io.Reader
+	reader = res.Body
+	length := 0
+	if len(h.replace) > 0 {
+		if reader, length, err = replace(res.Body, h.replace); err != nil {
 			return
 		}
+	}
 
-		if ct, ok := h.capture["content-type"]; ok {
+    if length > 0 {
+        writer.Header().Set("content-length", strconv.Itoa(length))
+    }
+    
+	if len(h.capture) > 0 {
+		if mirror, ok := h.capture["mirror"]; ok && mirror == "yes" {
+			h.copy(writer, reader, uri)
+		} else if ct, ok := h.capture["content-type"]; ok {
 			rct := res.Header.Get("content-type")
 			if ok, _ = regexp.MatchString(ct, rct); ok {
-				h.copy(writer, res, uri)
-
-				return
+				h.copy(writer, reader, uri)
 			}
 		}
+	} else {
+		io.Copy(writer, reader)
 	}
-
-	if len(h.replace) == 0 {
-		io.Copy(writer, res.Body)
-
-		return
-	}
-
-	bs, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return
-	}
-
-	for key := range h.replace {
-		bs = bytes.ReplaceAll(bs, []byte(key), []byte(h.replace[key]))
-	}
-	writer.Header().Set("content-length", strconv.Itoa(len(bs)))
-	writer.Write(bs)
 }
 
-func (h *httphandler) copy(writer http.ResponseWriter, res *http.Response, uri string) {
-	c := capture{reader: res.Body, gzip: res.Header.Get("Content-Encoding") == "gzip"}
+func (h *httphandler) copy(writer http.ResponseWriter, reader io.Reader, uri string) {
+	c := capture{reader: reader}
 	if err := c.init(uri); err != nil {
 		Log("init capture err %v", err)
 
