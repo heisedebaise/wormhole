@@ -20,17 +20,22 @@ func (c *capture) init(uri string) (err error) {
 	} else {
 		path += uri[:index+1]
 		name = uri[index+1:]
+		if index = strings.Index(name, "?"); index > -1 {
+			name = name[:index]
+		}
 	}
 	if name == "" {
 		name = "_"
 	}
 
 	if err = os.MkdirAll(path, os.ModePerm); err != nil {
+		Log("mkdir %s err %v", path, err)
+
 		return
 	}
 
 	if c.file, err = os.OpenFile(path+name, os.O_CREATE|os.O_RDWR, os.ModePerm); err != nil {
-		return
+		Log("open file %s%s err %v", path, name, err)
 	}
 
 	return
