@@ -1,13 +1,13 @@
 package wormhole
 
 import (
-    "crypto/tls"
-    "io"
-    "net/http"
-    "regexp"
-    "strconv"
-    "strings"
-    "time"
+	"crypto/tls"
+	"io"
+	"net/http"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type httphandler struct {
@@ -43,19 +43,18 @@ func (h *httphandler) ServeHTTP(writer http.ResponseWriter, req *http.Request) {
 		writer.Header().Set(key, res.Header.Get(key))
 	}
 
-	var reader io.Reader
-	reader = res.Body
-	length := 0
+	var reader io.Reader = res.Body
 	if len(h.replace) > 0 {
+		length := 0
 		if reader, length, err = replace(res.Body, h.replace); err != nil {
 			return
 		}
+
+		if length > 0 {
+			writer.Header().Set("content-length", strconv.Itoa(length))
+		}
 	}
 
-    if length > 0 {
-        writer.Header().Set("content-length", strconv.Itoa(length))
-    }
-    
 	if len(h.capture) > 0 {
 		if mirror, ok := h.capture["mirror"]; ok && mirror == "yes" {
 			h.copy(writer, reader, uri)
